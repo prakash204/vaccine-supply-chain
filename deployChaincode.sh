@@ -1,8 +1,13 @@
 export CORE_PEER_TLS_ENABLED=true
+
 export ORDERER_CA=${PWD}/artifacts/channel/crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
+
 export PEER0_MANUFACTURER_CA=${PWD}/artifacts/channel/crypto-config/peerOrganizations/manufacturer.example.com/peers/peer0.manufacturer.example.com/tls/ca.crt
 export PEER0_DISTRIBUTION_CA=${PWD}/artifacts/channel/crypto-config/peerOrganizations/distribution.example.com/peers/peer0.distribution.example.com/tls/ca.crt
-export PEER0_ORG3_CA=${PWD}/artifacts/channel/crypto-config/peerOrganizations/org3.example.com/peers/peer0.org3.example.com/tls/ca.crt
+export PEER0_MED_CA=${PWD}/artifacts/channel/crypto-config/peerOrganizations/med.example.com/peers/peer0.med.example.com/tls/ca.crt
+export PEER0_BENEFICIARY_CA=${PWD}/artifacts/channel/crypto-config/peerOrganizations/beneficiary.example.com/peers/peer0.beneficiary.example.com/tls/ca.crt
+export PEER0_IOT_CA=${PWD}/artifacts/channel/crypto-config/peerOrganizations/iot.example.com/peers/peer0.iot.example.com/tls/ca.crt
+
 export FABRIC_CFG_PATH=${PWD}/artifacts/channel/config/
 
 export CHANNEL_NAME=mychannel
@@ -14,54 +19,69 @@ setGlobalsForOrderer() {
 
 }
 
-setGlobalsForPeer0Manufacturer() {
+setGlobalsForPeer0Manufacturer(){
     export CORE_PEER_LOCALMSPID="ManufacturerMSP"
     export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_MANUFACTURER_CA
     export CORE_PEER_MSPCONFIGPATH=${PWD}/artifacts/channel/crypto-config/peerOrganizations/manufacturer.example.com/users/Admin@manufacturer.example.com/msp
     export CORE_PEER_ADDRESS=localhost:7051
 }
 
-setGlobalsForPeer0Distribution() {
+setGlobalsForPeer0Distribution(){
     export CORE_PEER_LOCALMSPID="DistributionMSP"
     export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_DISTRIBUTION_CA
     export CORE_PEER_MSPCONFIGPATH=${PWD}/artifacts/channel/crypto-config/peerOrganizations/distribution.example.com/users/Admin@distribution.example.com/msp
+    export CORE_PEER_ADDRESS=localhost:8051
+
+}
+
+setGlobalsForPeer0Med(){
+    export CORE_PEER_LOCALMSPID="MedMSP"
+    export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_MED_CA
+    export CORE_PEER_MSPCONFIGPATH=${PWD}/artifacts/channel/crypto-config/peerOrganizations/med.example.com/users/Admin@med.example.com/msp
     export CORE_PEER_ADDRESS=localhost:9051
 
 }
 
-setGlobalsForPeer0Org3(){
-    export CORE_PEER_LOCALMSPID="Org3MSP"
-    export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_ORG3_CA
-    export CORE_PEER_MSPCONFIGPATH=${PWD}/artifacts/channel/crypto-config/peerOrganizations/org3.example.com/users/Admin@org3.example.com/msp
+setGlobalsForPeer0Beneficiary(){
+    export CORE_PEER_LOCALMSPID="BeneficiaryMSP"
+    export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_BENEFICIARY_CA
+    export CORE_PEER_MSPCONFIGPATH=${PWD}/artifacts/channel/crypto-config/peerOrganizations/beneficiary.example.com/users/Admin@beneficiary.example.com/msp
+    export CORE_PEER_ADDRESS=localhost:10051
+
+}
+
+setGlobalsForPeer0Iot(){
+    export CORE_PEER_LOCALMSPID="IotMSP"
+    export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_IOT_CA
+    export CORE_PEER_MSPCONFIGPATH=${PWD}/artifacts/channel/crypto-config/peerOrganizations/iot.example.com/users/Admin@iot.example.com/msp
     export CORE_PEER_ADDRESS=localhost:11051
 
 }
 
 presetup() {
     echo Vendoring Go dependencies ...
-    pushd ./artifacts/src/github.com/fabcar/go
+    pushd ./artifacts/src/github.com/vacsup/go
     GO111MODULE=on go mod vendor
     popd
     echo Finished vendoring Go dependencies
 }
-# presetup
+#presetup
 
 CHANNEL_NAME="mychannel"
 CC_RUNTIME_LANGUAGE="golang"
 VERSION="1"
 SEQUENCE="1"
-CC_SRC_PATH="./artifacts/src/github.com/fabcar/go"
-CC_NAME="fabcar"
+CC_SRC_PATH="./artifacts/src/github.com/vacsup/go"
+CC_NAME="vacsup_cc"
 
 packageChaincode() {
     rm -rf ${CC_NAME}.tar.gz
-    setGlobalsForPeer0Manufacturer
     peer lifecycle chaincode package ${CC_NAME}.tar.gz \
         --path ${CC_SRC_PATH} --lang ${CC_RUNTIME_LANGUAGE} \
         --label ${CC_NAME}_${VERSION}
     echo "===================== Chaincode is packaged ===================== "
 }
-# packageChaincode
+#packageChaincode
 
 installChaincode() {
     setGlobalsForPeer0Manufacturer
@@ -72,12 +92,20 @@ installChaincode() {
     peer lifecycle chaincode install ${CC_NAME}.tar.gz
     echo "===================== Chaincode is installed on peer0.distribution ===================== "
 
-    setGlobalsForPeer0Org3
+    setGlobalsForPeer0Med
     peer lifecycle chaincode install ${CC_NAME}.tar.gz
-    echo "===================== Chaincode is installed on peer0.org3 ===================== "
+    echo "===================== Chaincode is installed on peer0.med ===================== "
+
+    setGlobalsForPeer0Beneficiary
+    peer lifecycle chaincode install ${CC_NAME}.tar.gz
+    echo "===================== Chaincode is installed on peer0.med ===================== "
+
+    setGlobalsForPeer0Iot
+    peer lifecycle chaincode install ${CC_NAME}.tar.gz
+    echo "===================== Chaincode is installed on peer0.med ===================== "
 }
 
-# installChaincode
+#installChaincode
 
 queryInstalled() {
     setGlobalsForPeer0Manufacturer
@@ -88,7 +116,7 @@ queryInstalled() {
     echo "===================== Query installed successful on peer0.manufacturer on channel ===================== "
 }
 
-# queryInstalled
+#queryInstalled
 
 # --collections-config ./artifacts/private-data/collections_config.json \
 #         --signature-policy "OR('ManufacturerMSP.member','DistributionMSP.member')" \
@@ -103,11 +131,11 @@ approveForMyManufacturer() {
         --sequence ${SEQUENCE}
     # set +x
 
-    echo "===================== chaincode approved from org 1 ===================== "
+    echo "===================== chaincode approved from Manufacturer ===================== "
 
 }
-# queryInstalled
-# approveForMyManufacturer
+#queryInstalled
+#approveForMyManufacturer
 
 # --signature-policy "OR ('ManufacturerMSP.member')"
 # --peerAddresses localhost:7051 --tlsRootCertFiles $PEER0_MANUFACTURER_CA --peerAddresses localhost:9051 --tlsRootCertFiles $PEER0_DISTRIBUTION_CA
@@ -115,15 +143,15 @@ approveForMyManufacturer() {
 #--channel-config-policy Channel/Application/Admins
 # --signature-policy "OR ('ManufacturerMSP.peer','DistributionMSP.peer')"
 
-checkCommitReadyness() {
+checkCommitReadynessManufacturer() {
     setGlobalsForPeer0Manufacturer
     peer lifecycle chaincode checkcommitreadiness \
         --channelID $CHANNEL_NAME --name ${CC_NAME} --version ${VERSION} \
-        --sequence ${VERSION} --output json --init-required
-    echo "===================== checking commit readyness from org 1 ===================== "
+        --sequence ${SEQUENCE} --output json --init-required
+    echo "===================== checking commit readyness from Manufacturer ===================== "
 }
 
-# checkCommitReadyness
+#checkCommitReadynessManufacturer
 
 approveForMyDistribution() {
     setGlobalsForPeer0Distribution
@@ -134,25 +162,25 @@ approveForMyDistribution() {
         --version ${VERSION} --init-required --package-id ${PACKAGE_ID} \
         --sequence ${SEQUENCE}
 
-    echo "===================== chaincode approved from org 2 ===================== "
+    echo "===================== chaincode approved from Distribution ===================== "
 }
 
-# queryInstalled
-# approveForMyDistribution
+#queryInstalled
+#approveForMyDistribution
 
-checkCommitReadyness() {
+checkCommitReadynessDistribution() {
 
     setGlobalsForPeer0Distribution
     peer lifecycle chaincode checkcommitreadiness --channelID $CHANNEL_NAME \
-        --peerAddresses localhost:9051 --tlsRootCertFiles $PEER0_DISTRIBUTION_CA \
+        --peerAddresses localhost:8051 --tlsRootCertFiles $PEER0_DISTRIBUTION_CA \
         --name ${CC_NAME} --version ${VERSION} --sequence ${VERSION} --output json --init-required
-    echo "===================== checking commit readyness from org 1 ===================== "
+    echo "===================== checking commit readyness from Distribution ===================== "
 }
 
-# checkCommitReadyness
+#checkCommitReadynessManufacturer
 
-approveForMyOrg3() {
-    setGlobalsForPeer0Org3
+approveForMyMed() {
+    setGlobalsForPeer0Med
 
     peer lifecycle chaincode approveformyorg -o localhost:7050 \
         --ordererTLSHostnameOverride orderer.example.com --tls $CORE_PEER_TLS_ENABLED \
@@ -160,20 +188,72 @@ approveForMyOrg3() {
         --version ${VERSION} --init-required --package-id ${PACKAGE_ID} \
         --sequence ${SEQUENCE}
 
-    echo "===================== chaincode approved from org 2 ===================== "
+    echo "===================== chaincode approved from Med ===================== "
 }
 
-# queryInstalled
-# approveForMyOrg3
+#queryInstalled
+#approveForMyMed
+#checkCommitReadynessManufacturer
 
-checkCommitReadyness() {
+checkCommitReadynessMed() {
 
-    setGlobalsForPeer0Org3
+    setGlobalsForPeer0Med
     peer lifecycle chaincode checkcommitreadiness --channelID $CHANNEL_NAME \
-        --peerAddresses localhost:11051 --tlsRootCertFiles $PEER0_ORG3_CA \
+        --peerAddresses localhost:9051 --tlsRootCertFiles $PEER0_MED_CA \
         --name ${CC_NAME} --version ${VERSION} --sequence ${VERSION} --output json --init-required
-    echo "===================== checking commit readyness from org 1 ===================== "
+    echo "===================== checking commit readyness from Med ===================== "
 }
+
+approveForMyBeneficiary() {
+    setGlobalsForPeer0Beneficiary
+
+    peer lifecycle chaincode approveformyorg -o localhost:7050 \
+        --ordererTLSHostnameOverride orderer.example.com --tls $CORE_PEER_TLS_ENABLED \
+        --cafile $ORDERER_CA --channelID $CHANNEL_NAME --name ${CC_NAME} \
+        --version ${VERSION} --init-required --package-id ${PACKAGE_ID} \
+        --sequence ${SEQUENCE}
+
+    echo "===================== chaincode approved from Beneficiary ===================== "
+}
+
+#queryInstalled
+#approveForMyBeneficiary
+#checkCommitReadynessManufacturer
+
+checkCommitReadynessBeneficiary() {
+
+    setGlobalsForPeer0Beneficiary
+    peer lifecycle chaincode checkcommitreadiness --channelID $CHANNEL_NAME \
+        --peerAddresses localhost:10051 --tlsRootCertFiles $PEER0_BENEFICIARY_CA \
+        --name ${CC_NAME} --version ${VERSION} --sequence ${VERSION} --output json --init-required
+    echo "===================== checking commit readyness from Beneficiary ===================== "
+}
+
+approveForMyIot() {
+    setGlobalsForPeer0Iot
+
+    peer lifecycle chaincode approveformyorg -o localhost:7050 \
+        --ordererTLSHostnameOverride orderer.example.com --tls $CORE_PEER_TLS_ENABLED \
+        --cafile $ORDERER_CA --channelID $CHANNEL_NAME --name ${CC_NAME} \
+        --version ${VERSION} --init-required --package-id ${PACKAGE_ID} \
+        --sequence ${SEQUENCE}
+
+    echo "===================== chaincode approved from Iot ===================== "
+}
+
+#queryInstalled
+#approveForMyIot
+#checkCommitReadynessManufacturer
+
+checkCommitReadynessIot() {
+
+    setGlobalsForPeer0Iot
+    peer lifecycle chaincode checkcommitreadiness --channelID $CHANNEL_NAME \
+        --peerAddresses localhost:11051 --tlsRootCertFiles $PEER0_IOT_CA \
+        --name ${CC_NAME} --version ${VERSION} --sequence ${VERSION} --output json --init-required
+    echo "===================== checking commit readyness from Iot ===================== "
+}
+
 
 # checkCommitReadyness
 
@@ -183,13 +263,15 @@ commitChaincodeDefination() {
         --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA \
         --channelID $CHANNEL_NAME --name ${CC_NAME} \
         --peerAddresses localhost:7051 --tlsRootCertFiles $PEER0_MANUFACTURER_CA \
-        --peerAddresses localhost:9051 --tlsRootCertFiles $PEER0_DISTRIBUTION_CA \
-        --peerAddresses localhost:11051 --tlsRootCertFiles $PEER0_ORG3_CA \
+        --peerAddresses localhost:8051 --tlsRootCertFiles $PEER0_DISTRIBUTION_CA \
+        --peerAddresses localhost:9051 --tlsRootCertFiles $PEER0_MED_CA \
+        --peerAddresses localhost:10051 --tlsRootCertFiles $PEER0_BENEFICIARY_CA \
+        --peerAddresses localhost:11051 --tlsRootCertFiles $PEER0_IOT_CA \
         --version ${VERSION} --sequence ${SEQUENCE} --init-required
 
 }
 
-# commitChaincodeDefination
+#commitChaincodeDefination
 
 queryCommitted() {
     setGlobalsForPeer0Manufacturer
@@ -197,7 +279,7 @@ queryCommitted() {
 
 }
 
-# queryCommitted
+#queryCommitted
 
 chaincodeInvokeInit() {
     setGlobalsForPeer0Manufacturer
@@ -206,13 +288,15 @@ chaincodeInvokeInit() {
         --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA \
         -C $CHANNEL_NAME -n ${CC_NAME} \
         --peerAddresses localhost:7051 --tlsRootCertFiles $PEER0_MANUFACTURER_CA \
-        --peerAddresses localhost:9051 --tlsRootCertFiles $PEER0_DISTRIBUTION_CA \
-         --peerAddresses localhost:11051 --tlsRootCertFiles $PEER0_ORG3_CA \
+        --peerAddresses localhost:8051 --tlsRootCertFiles $PEER0_DISTRIBUTION_CA \
+        --peerAddresses localhost:9051 --tlsRootCertFiles $PEER0_MED_CA \
+        --peerAddresses localhost:10051 --tlsRootCertFiles $PEER0_BENEFICIARY_CA \
+        --peerAddresses localhost:11051 --tlsRootCertFiles $PEER0_IOT_CA \
         --isInit -c '{"Args":[]}'
 
 }
 
-# chaincodeInvokeInit
+#chaincodeInvokeInit
 
 chaincodeInvoke() {
     setGlobalsForPeer0Manufacturer
@@ -224,12 +308,16 @@ chaincodeInvoke() {
         --cafile $ORDERER_CA \
         -C $CHANNEL_NAME -n ${CC_NAME}  \
         --peerAddresses localhost:7051 --tlsRootCertFiles $PEER0_MANUFACTURER_CA \
-        --peerAddresses localhost:9051 --tlsRootCertFiles $PEER0_DISTRIBUTION_CA   \
-        -c '{"function": "createCar","Args":["{\"id\":\"1\",\"make\":\"Audi\",\"addedAt\":1600138309939,\"model\":\"R8\", \"color\":\"red\",\"owner\":\"pavan\"}"]}'
+        --peerAddresses localhost:8051 --tlsRootCertFiles $PEER0_DISTRIBUTION_CA \
+        --peerAddresses localhost:9051 --tlsRootCertFiles $PEER0_MED_CA \
+        --peerAddresses localhost:10051 --tlsRootCertFiles $PEER0_BENEFICIARY_CA \
+        --peerAddresses localhost:11051 --tlsRootCertFiles $PEER0_IOT_CA \
+        -c '{"function": "VaccineContract:CreateVaccine","Args":["{\"id\":\"asd23ass\",\"name\":\"covishield\",\"manufacturer\":\"nutical pharma\",\"owner\":\"nutical pharma\",\"count\":30,\"t_dev_id\":\"dev1\", \"addedAt\":221034}"]}'
 
 }
-
-# chaincodeInvoke
+#'{"function": "DeviceContract:CreateDevice","Args":["{\"id\":\"dev1\",\"type\":\"temp\",\"min_temp\":10,\"present_temp\":15,\"max_temp\":17, \"total_lots_watching\":0}"]}'
+#'{"function": "CreateVaccine","Args":["{\"id\":\"asd23ass\",\"name\":\"covishield\",\"manufacturer\":\"nutical pharma\",\"owner\":\"nutical pharma\",\"temp_device_id\":null, \"addedAt\":1234}"]}'
+chaincodeInvoke
 
 chaincodeInvokeDeleteAsset() {
     setGlobalsForPeer0Manufacturer
@@ -241,36 +329,44 @@ chaincodeInvokeDeleteAsset() {
         --cafile $ORDERER_CA \
         -C $CHANNEL_NAME -n ${CC_NAME}  \
         --peerAddresses localhost:7051 --tlsRootCertFiles $PEER0_MANUFACTURER_CA \
-        --peerAddresses localhost:9051 --tlsRootCertFiles $PEER0_DISTRIBUTION_CA   \
-        -c '{"function": "DeleteCarById","Args":["2"]}'
+        --peerAddresses localhost:8051 --tlsRootCertFiles $PEER0_DISTRIBUTION_CA \
+        --peerAddresses localhost:9051 --tlsRootCertFiles $PEER0_MED_CA \
+        --peerAddresses localhost:10051 --tlsRootCertFiles $PEER0_BENEFICIARY_CA \
+        --peerAddresses localhost:11051 --tlsRootCertFiles $PEER0_IOT_CA \
+        -c '{"function": "DeleteDeviceById","Args":["dev2"]}'
 
 }
-
-# chaincodeInvokeDeleteAsset
+#chaincodeInvokeDeleteAsset
 
 chaincodeQuery() {
     setGlobalsForPeer0Manufacturer
-    peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "GetCarById","Args":["1"]}'
+    peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "GetDeviceById","Args":["dev1"]}'
 }
 
 # chaincodeQuery
 
 # Run this function if you add any new dependency in chaincode
-presetup
+#presetup
 
-packageChaincode
-installChaincode
-queryInstalled
-approveForMyManufacturer
-checkCommitReadyness
-approveForMyDistribution
-checkCommitReadyness
-approveForMyOrg3
-checkCommitReadyness
-commitChaincodeDefination
-queryCommitted
-chaincodeInvokeInit
-sleep 5
-chaincodeInvoke
-sleep 3
-chaincodeQuery
+#packageChaincode
+#installChaincode
+#queryInstalled
+
+#approveForMyManufacturer
+#checkCommitReadynessManufacturer
+#approveForMyDistribution
+#checkCommitReadynessDistribution
+#approveForMyMed
+#checkCommitReadynessMed
+#approveForMyBeneficiary
+#checkCommitReadynessBeneficiary
+#approveForMyIot
+#checkCommitReadynessIot
+
+#commitChaincodeDefination
+#queryCommitted
+#chaincodeInvokeInit
+#sleep 5
+#chaincodeInvoke
+#sleep 3
+#chaincodeQuery

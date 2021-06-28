@@ -87,7 +87,7 @@ Organizations:
 
         AnchorPeers:
             - Host: peer0.med.example.com
-              Port: 10051
+              Port: 9051
 
     - &Beneficiary
         Name: BeneficiaryMSP
@@ -112,7 +112,7 @@ Organizations:
 
         AnchorPeers:
             - Host: peer0.beneficiary.example.com
-              Port: 11051
+              Port: 10051
 
     - &Iot
         Name: IotMSP
@@ -137,7 +137,7 @@ Organizations:
 
         AnchorPeers:
             - Host: peer0.iot.example.com
-              Port: 12051
+              Port: 11051
 
 Capabilities:
     Channel: &ChannelCapabilities

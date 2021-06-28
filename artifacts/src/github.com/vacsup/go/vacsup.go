@@ -23,11 +23,11 @@ var logger = flogging.MustGetLogger("vacsup_cc")
 
 type Vaccine struct {
 	ID      string `json:"id"`
-	name    string `json:"name"`
-	manufacturer   string `json:"manufacturer"`
-	owner   string `json:"owner"`
-	count uint64 `json:"count"`
-	temp_device_id string `json:"t_dev_id"`
+	Name    string `json:"name"`
+	Manufacturer   string `json:"manufacturer"`
+	Owner   string `json:"owner"`
+	Count uint64 `json:"count"`
+	Temp_device_id string `json:"t_dev_id"`
 	AddedAt uint64 `json:"addedAt"`
 }
 
@@ -37,12 +37,12 @@ type Device struct {
 	Min_temp uint64 `json:"min_temp"`
 	Present_temp uint64 `json:"present_temp"`
 	Max_temp uint64 `json:"max_temp"`
-	Longitude unint64 `json:"longitude"`
-	Latitude uint64 `json:"latitude"`
-	total_lots uint64 `json:"total_lots_watching"`
+	Latitude string `json:latitude`
+	Longitude string `json:longitude`
+	Total_lots uint64 `json:"total_lots_watching"`
 }
 
-func (s *SmartContract) CreateVaccine(ctx contractapi.TransactionContextInterface,vaccineData string) (string, error) {
+func (s *VaccineContract) CreateVaccine(ctx contractapi.TransactionContextInterface,vaccineData string) (string, error) {
 
 	if len(vaccineData) == 0 {
 		return "", fmt.Errorf("Please pass the correct vaccine data")
@@ -58,23 +58,21 @@ func (s *SmartContract) CreateVaccine(ctx contractapi.TransactionContextInterfac
 	if err != nil {
 		return "", fmt.Errorf("Failed while marshling vaccine. %s", err.Error())
 	}
-  if len(vaccine.ID) == 0 {
-		return "", fmt.Errorf("Please pass the correct vaccine id")
-	} else {
-		temp, err := ctx.GetStub().GetState(vaccine.ID)
-
-		if temp != nil {
-			return nil, fmt.Errorf("%s already exists", vaccine.ID)
-		}
-	}
 
 	if len(vaccine.temp_device_id) == 0 {
-		return "". fmt.Errorf("Please pass the correct device id")
+		return "", fmt.Errorf("Please pass the correct device id")
 	} else {
-		temp, err := ctx.GetStub().GetState()
 
-		if temp == nil {
-			return nil, fmt.Errorf("%s not exists", vaccine.temp_device_id)
+		params := []string{"DeviceContract:GetDeviceById", vaccine.temp_device_id}
+		queryArgs := make([][]byte, len(params))
+		for i, arg := range params {
+			queryArgs[i] = []byte(arg)
+		}
+
+		temp, err := ctx.GetStub().InvokeChaincode("DeviceContract", queryArgs, "mychannel")
+
+		if (err != nil && temp == nil) {
+			return "",fmt.Errorf("device not found. %s", err.Error())
 		}
 	}
 
@@ -83,36 +81,7 @@ func (s *SmartContract) CreateVaccine(ctx contractapi.TransactionContextInterfac
 	return ctx.GetStub().GetTxID(), ctx.GetStub().PutState(vaccine.ID, vaccineAsBytes)
 }
 
-func (s *SmartContract) CreateDevice(ctx contractapi.TransactionContextInterface,deviceData string) (string, error) {
-
-	if len(deviceData) == 0 {
-		return "", fmt.Errorf("Please pass the correct device data")
-	}
-
-	var device Device
-	err := json.Unmarshal([]byte(deviceData), &device)
-	if err != nil {
-		return "", fmt.Errorf("Failed while unmarshling device. %s", err.Error())
-	}
-
-	deviceAsBytes, err := json.Marshal(device)
-	if err != nil {
-		return "", fmt.Errorf("Failed while marshling device. %s", err.Error())
-	}
-
-	temp, err := ctx.GetStub().GetState(deviceID)
-
-	if temp != nil {
-		return nil, fmt.Errorf("%s already exists", deviceID)
-	}
-
-	ctx.GetStub().SetEvent("CreateAsset", deviceAsBytes)
-
-
-	return ctx.GetStub().GetTxID(), ctx.GetStub().PutState(device.ID, deviceAsBytes)
-}
-
-func (s *SmartContract) UpdateVaccineOwner(ctx contractapi.TransactionContextInterface, vaccineID string, newOwner string) (string, error) {
+func (s *VaccineContract) UpdateVaccineOwner(ctx contractapi.TransactionContextInterface, vaccineID string, newOwner string) (string, error) {
 
 	if len(vaccineID) == 0 {
 		return "", fmt.Errorf("Please pass the correct vaccine id")
@@ -131,7 +100,7 @@ func (s *SmartContract) UpdateVaccineOwner(ctx contractapi.TransactionContextInt
 	vaccine := new(Vaccine)
 	_ = json.Unmarshal(vaccineAsBytes, vaccine)
 
-	vaccine.Owner = newOwner
+	vaccine.owner = newOwner
 
 	vaccineAsBytes, err = json.Marshal(vaccine)
 	if err != nil {
@@ -144,7 +113,7 @@ func (s *SmartContract) UpdateVaccineOwner(ctx contractapi.TransactionContextInt
 
 }
 
-func (s *SmartContract) UpdateVaccineTempDeviceID(ctx contractapi.TransactionContextInterface, vaccineID string, newdeviceID string) (string, error) {
+func (s *VaccineContract) UpdateVaccineDeviceID(ctx contractapi.TransactionContextInterface, vaccineID string, newdeviceID string) (string, error) {
 
 	if len(vaccineID) == 0 {
 		return "", fmt.Errorf("Please pass the correct vaccine id")
@@ -154,7 +123,11 @@ func (s *SmartContract) UpdateVaccineTempDeviceID(ctx contractapi.TransactionCon
 	deviceAsBytes, err2 := ctx.GetStub().GetState(newdeviceID)
 
 	if err1 != nil {
-		return "", fmt.Errorf("Failed to get vaccine data. %s", err.Error())
+		return "", fmt.Errorf("Failed to get vaccine data. %s", err1.Error())
+	}
+
+	if err2 != nil {
+		return "", fmt.Errorf("Failed to get device data. %s", err2.Error())
 	}
 
 	if vaccineAsBytes == nil {
@@ -170,9 +143,9 @@ func (s *SmartContract) UpdateVaccineTempDeviceID(ctx contractapi.TransactionCon
 
 	vaccine.temp_device_id = newdeviceID
 
-	vaccineAsBytes, err = json.Marshal(vaccine)
-	if err != nil {
-		return "", fmt.Errorf("Failed while marshling vaccine. %s", err.Error())
+	vaccineAsBytes, err1 = json.Marshal(vaccine)
+	if err1 != nil {
+		return "", fmt.Errorf("Failed while marshling vaccine. %s", err1.Error())
 	}
 
 	//  txId := ctx.GetStub().GetTxID()
@@ -181,7 +154,7 @@ func (s *SmartContract) UpdateVaccineTempDeviceID(ctx contractapi.TransactionCon
 
 }
 
-func (s *SmartContract) GetHistoryForAsset(ctx contractapi.TransactionContextInterface, vaccineID string) (string, error) {
+func (s *VaccineContract) GetHistoryForAsset(ctx contractapi.TransactionContextInterface, vaccineID string) (string, error) {
 
 	resultsIterator, err := ctx.GetStub().GetHistoryForKey(vaccineID)
 	if err != nil {
@@ -231,7 +204,7 @@ func (s *SmartContract) GetHistoryForAsset(ctx contractapi.TransactionContextInt
 	return string(buffer.Bytes()), nil
 }
 
-func (s *SmartContract) GetVaccineById(ctx contractapi.TransactionContextInterface, vaccineID string) (*Vaccine, error) {
+func (s *VaccineContract) GetVaccineById(ctx contractapi.TransactionContextInterface, vaccineID string) (*Vaccine, error) {
 	if len(vaccineID) == 0 {
 		return nil, fmt.Errorf("Please provide correct contract Id")
 		// return shim.Error("Incorrect number of arguments. Expecting 1")
@@ -254,7 +227,7 @@ func (s *SmartContract) GetVaccineById(ctx contractapi.TransactionContextInterfa
 
 }
 
-func (s *SmartContract) DeleteVaccineById(ctx contractapi.TransactionContextInterface, vaccineID string) (string, error) {
+func (s *VaccineContract) DeleteVaccineById(ctx contractapi.TransactionContextInterface, vaccineID string) (string, error) {
 	if len(vaccineID) == 0 {
 		return "", fmt.Errorf("Please provide correct contract Id")
 	}
@@ -262,15 +235,7 @@ func (s *SmartContract) DeleteVaccineById(ctx contractapi.TransactionContextInte
 	return ctx.GetStub().GetTxID(), ctx.GetStub().DelState(vaccineID)
 }
 
-func (s *SmartContract) DeleteDeviceById(ctx contractapi.TransactionContextInterface, deviceID string) (string, error) {
-	if len(deviceID) == 0 {
-		return "", fmt.Errorf("Please provide correct contract Id")
-	}
-
-	return ctx.GetStub().GetTxID(), ctx.GetStub().DelState(deviceID)
-}
-
-func (s *SmartContract) GetContractsForQuery(ctx contractapi.TransactionContextInterface, queryString string) ([]Vaccine, error) {
+func (s *VaccineContract) GetContractsForQuery(ctx contractapi.TransactionContextInterface, queryString string) ([]Vaccine, error) {
 
 	queryResults, err := s.getQueryResultForQueryString(ctx, queryString)
 
@@ -282,7 +247,8 @@ func (s *SmartContract) GetContractsForQuery(ctx contractapi.TransactionContextI
 
 }
 
-func (s *SmartContract) getQueryResultForQueryString(ctx contractapi.TransactionContextInterface, queryString string) ([]Vaccine, error) {
+
+func (s *VaccineContract) getQueryResultForQueryString(ctx contractapi.TransactionContextInterface, queryString string) ([]Vaccine, error) {
 
 	resultsIterator, err := ctx.GetStub().GetQueryResult(queryString)
 	if err != nil {
@@ -311,9 +277,103 @@ func (s *SmartContract) getQueryResultForQueryString(ctx contractapi.Transaction
 }
 
 
+func (s *DeviceContract) CreateDevice(ctx contractapi.TransactionContextInterface,deviceData string) (string, error) {
+
+	if len(deviceData) == 0 {
+		return "", fmt.Errorf("Please pass the correct device data")
+	}
+
+	var device Device
+	err := json.Unmarshal([]byte(deviceData), &device)
+	if err != nil {
+		return "", fmt.Errorf("Failed while unmarshling device. %s", err.Error())
+	}
+
+	deviceAsBytes, err := json.Marshal(device)
+	if err != nil {
+		return "", fmt.Errorf("Failed while marshling device. %s", err.Error())
+	}
+
+	temp, err := ctx.GetStub().GetState(device.ID)
+
+	if temp != nil {
+		return "", fmt.Errorf("%s already exists", device.ID)
+	}
+
+	ctx.GetStub().SetEvent("CreateAsset", deviceAsBytes)
+
+
+	return ctx.GetStub().GetTxID(), ctx.GetStub().PutState(device.ID, deviceAsBytes)
+}
+
+func (s *DeviceContract) GetDeviceById(ctx contractapi.TransactionContextInterface, deviceID string) (*Device, error) {
+	if len(deviceID) == 0 {
+		return nil, fmt.Errorf("Please provide correct contract Id")
+		// return shim.Error("Incorrect number of arguments. Expecting 1")
+	}
+
+	deviceAsBytes, err := ctx.GetStub().GetState(deviceID)
+
+	if err != nil {
+		return nil, fmt.Errorf("Failed to read from world state. %s", err.Error())
+	}
+
+	if deviceAsBytes == nil {
+		return nil, fmt.Errorf("%s does not exist", deviceID)
+	}
+
+	device := new(Device)
+	_ = json.Unmarshal(deviceAsBytes, device)
+
+	return device, nil
+
+}
+
+func (s *DeviceContract) setTemp_location(ctx contractapi.TransactionContextInterface, deviceID string, present_temp uint64, latitude string, longitude string) (string, error) {
+
+	if len(deviceID) == 0 {
+		return "", fmt.Errorf("Please pass the correct device id")
+	}
+
+	deviceAsBytes, err := ctx.GetStub().GetState(deviceID)
+
+	if err != nil {
+		return "", fmt.Errorf("Failed to get device data. %s", err.Error())
+	}
+
+	if deviceAsBytes == nil {
+		return "", fmt.Errorf("%s does not exist", deviceID)
+	}
+
+	device := new(Device)
+	_ = json.Unmarshal(deviceAsBytes, device)
+
+	device.present_temp = present_temp
+	device.latitude = latitude
+	device.longitude = longitude
+
+	deviceAsBytes, err = json.Marshal(device)
+	if err != nil {
+		return "", fmt.Errorf("Failed while marshling device. %s", err.Error())
+	}
+
+	//  txId := ctx.GetStub().GetTxID()
+
+	return ctx.GetStub().GetTxID(), ctx.GetStub().PutState(device.ID, deviceAsBytes)
+
+}
+
+func (s *DeviceContract) DeleteDeviceById(ctx contractapi.TransactionContextInterface, deviceID string) (string, error) {
+	if len(deviceID) == 0 {
+		return "", fmt.Errorf("Please provide correct contract Id")
+	}
+
+	return ctx.GetStub().GetTxID(), ctx.GetStub().DelState(deviceID)
+}
+
 func main() {
 
-	chaincode, err := contractapi.NewChaincode(new(SmartContract))
+	chaincode, err := contractapi.NewChaincode(new(VaccineContract), new(DeviceContract))
 	if err != nil {
 		fmt.Printf("Error create vaccine chaincode: %s", err.Error())
 		return
