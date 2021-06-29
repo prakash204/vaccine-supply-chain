@@ -64,7 +64,8 @@ app.use((req, res, next) => {
     });
 });
 
-var server = http.createServer(app).listen(port, function () { console.log(`Server started on ${port}`) });
+var server = http.createServer(app).listen(port, function () {console.log(`Server started on ${port}`) });
+
 logger.info('****************** SERVER STARTED ************************');
 logger.info('***************  http://%s:%s  ******************', host, port);
 server.timeout = 240000;
@@ -81,9 +82,11 @@ function getErrorMessage(field) {
 app.post('/users', async function (req, res) {
     var username = req.body.username;
     var orgName = req.body.orgName;
+    var passcode = req.body.passcode;
     logger.debug('End point : /users');
     logger.debug('User name : ' + username);
     logger.debug('Org name  : ' + orgName);
+    logger.debug('passcode  : ' + passcode);
     if (!username) {
         res.json(getErrorMessage('\'username\''));
         return;
@@ -92,12 +95,18 @@ app.post('/users', async function (req, res) {
         res.json(getErrorMessage('\'orgName\''));
         return;
     }
+    if (!passcode) {
+        res.json(getErrorMessage('\'passcode\''));
+        return;
+    }
 
     var token = jwt.sign({
         exp: Math.floor(Date.now() / 1000) + parseInt(constants.jwt_expiretime),
         username: username,
-        orgName: orgName
+        orgName: orgName,
+        passcode: passcode
     }, app.get('secret'));
+    console.log("toekn:"+token);
 
     let response = await helper.getRegisteredUser(username, orgName, true);
 
@@ -117,6 +126,7 @@ app.post('/users', async function (req, res) {
 app.post('/register', async function (req, res) {
     var username = req.body.username;
     var orgName = req.body.orgName;
+    var passcode = req.body.passcode;
     logger.debug('End point : /users');
     logger.debug('User name : ' + username);
     logger.debug('Org name  : ' + orgName);
@@ -128,11 +138,16 @@ app.post('/register', async function (req, res) {
         res.json(getErrorMessage('\'orgName\''));
         return;
     }
+    if (!passcode) {
+        res.json(getErrorMessage('\'passcode\''));
+        return;
+    }
 
     var token = jwt.sign({
         exp: Math.floor(Date.now() / 1000) + parseInt(constants.jwt_expiretime),
         username: username,
-        orgName: orgName
+        orgName: orgName,
+        passcode: passcode
     }, app.get('secret'));
 
     console.log(token)
@@ -155,6 +170,7 @@ app.post('/register', async function (req, res) {
 app.post('/users/login', async function (req, res) {
     var username = req.body.username;
     var orgName = req.body.orgName;
+    var passcode = req.body.passcode;
     logger.debug('End point : /users');
     logger.debug('User name : ' + username);
     logger.debug('Org name  : ' + orgName);
@@ -166,11 +182,15 @@ app.post('/users/login', async function (req, res) {
         res.json(getErrorMessage('\'orgName\''));
         return;
     }
+    if (!passcode) {
+      res.json(getErrorMessage('\'passcode\''));
+    }
 
     var token = jwt.sign({
         exp: Math.floor(Date.now() / 1000) + parseInt(constants.jwt_expiretime),
         username: username,
-        orgName: orgName
+        orgName: orgName,
+        passcode: passcode
     }, app.get('secret'));
 
     let isUserRegistered = await helper.isUserRegistered(username, orgName);

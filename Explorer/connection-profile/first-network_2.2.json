@@ -1,5 +1,5 @@
 {
-	"name": "first network (ignored)",
+	"name": "artifcats test (ignored)",
 	"version": "1.0.0",
 	"license": "Apache-2.0",
 	"client": {
@@ -11,10 +11,10 @@
 		"adminCredential": {
 			"id": "exploreradmin",
 			"password": "exploreradminpw",
-			"affiliation": "org1.department1"
+			"affiliation": "manufacturer.department1"
 		},
 		"enableAuthentication": true,
-		"organization": "Org1MSP",
+		"organization": "ManufacturerMSP",
 		"connection": {
 			"timeout": {
 				"peer": {
@@ -27,7 +27,7 @@
 	"channels": {
 		"mychannel": {
 			"peers": {
-				"peer0.org1.example.com": {}
+				"peer0.manufacturer.example.com": {}
 			},
 			"connection": {
 				"timeout": {
@@ -41,28 +41,28 @@
 		}
 	},
 	"organizations": {
-		"Org1MSP": {
-			"mspid": "Org1MSP",
+		"ManufacturerMSP": {
+			"mspid": "ManufacturerMSP",
 			"adminPrivateKey": {
-				"path": "/etc/data/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/keystore/priv_sk"
+				"path": "/etc/data/peerOrganizations/manufacturer.example.com/users/Admin@manufacturer.example.com/msp/keystore/1e6a9e4ac755d8ff8282adfec79e020dab06fedd1cbc327dc92e9f417eed9322_sk"
 			},
 			"peers": [
-				"peer0.org1.example.com"
+				"peer0.manufacturer.example.com"
 			],
 			"signedCert": {
-				"path": "/etc/data/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/signcerts/cert.pem"
+				"path": "/etc/data/peerOrganizations/manufacturer.example.com/users/Admin@manufacturer.example.com/msp/signcerts/cert.pem"
 			}
 		}
 	},
 	"peers": {
-		"peer0.org1.example.com": {
+		"peer0.manufacturer.example.com": {
 			"tlsCACerts": {
-				"path": "/etc/data/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt"
+				"path": "/etc/data/peerOrganizations/manufacturer.example.com/peers/peer0.manufacturer.example.com/tls/ca.crt"
 			},
-			"url": "grpcs://peer0.org1.example.com:7051",
-			"eventUrl": "grpcs://peer0.org1.example.com:7053",
+			"url": "grpcs://peer0.manufacturer.example.com:7051",
+			"eventUrl": "grpcs://peer0.manufacturer.example.com:7053",
 			"grpcOptions": {
-				"ssl-target-name-override": "peer0.org1.example.com"
+				"ssl-target-name-override": "peer0.manufacturer.example.com"
 			}
 		}
 	}

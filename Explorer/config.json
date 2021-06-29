@@ -1,8 +1,8 @@
 {
 	"network-configs": {
-		"first-network": {
-			"name": "first-network",
-			"profile": "./connection-profile/first-network_2.2.json"
+		"artifacts_test": {
+			"name": "artifacts_test",
+			"profile": "./connection-profile/network.json"
 		}
 	},
 	"license": "Apache-2.0"

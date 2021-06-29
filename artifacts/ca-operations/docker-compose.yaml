@@ -19,6 +19,6 @@ services:
     volumes:
       - ./fabric-ca:/etc/hyperledger/fabric-ca-server
     container_name: ca_operations
-    hostname: ca.org1.example.com
+    hostname: ca.manufacturer.example.com
     networks:
       - test

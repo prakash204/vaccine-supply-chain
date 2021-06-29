@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"strconv"
 	"time"
+	"reflect"
 
 	"github.com/hyperledger/fabric-contract-api-go/contractapi"
 	"github.com/hyperledger/fabric/common/flogging"
@@ -33,7 +34,6 @@ type Vaccine struct {
 
 type Device struct {
 	ID string `json:"id"`
-	Type string `json:"type"`
 	Min_temp uint64 `json:"min_temp"`
 	Present_temp uint64 `json:"present_temp"`
 	Max_temp uint64 `json:"max_temp"`
@@ -59,20 +59,20 @@ func (s *VaccineContract) CreateVaccine(ctx contractapi.TransactionContextInterf
 		return "", fmt.Errorf("Failed while marshling vaccine. %s", err.Error())
 	}
 
-	if len(vaccine.temp_device_id) == 0 {
+	if len(vaccine.Temp_device_id) == 0 {
 		return "", fmt.Errorf("Please pass the correct device id")
 	} else {
 
-		params := []string{"DeviceContract:GetDeviceById", vaccine.temp_device_id}
+		params := []string{"DeviceContract:GetDeviceById", vaccine.Temp_device_id}
 		queryArgs := make([][]byte, len(params))
 		for i, arg := range params {
 			queryArgs[i] = []byte(arg)
 		}
 
-		temp, err := ctx.GetStub().InvokeChaincode("DeviceContract", queryArgs, "mychannel")
+		temp := ctx.GetStub().InvokeChaincode("DeviceContract", queryArgs, "mychannel")
 
-		if (err != nil && temp == nil) {
-			return "",fmt.Errorf("device not found. %s", err.Error())
+		if reflect.TypeOf(temp).String() != "Device" {
+			return "",fmt.Errorf("device not found.")
 		}
 	}
 
@@ -100,7 +100,7 @@ func (s *VaccineContract) UpdateVaccineOwner(ctx contractapi.TransactionContextI
 	vaccine := new(Vaccine)
 	_ = json.Unmarshal(vaccineAsBytes, vaccine)
 
-	vaccine.owner = newOwner
+	vaccine.Owner = newOwner
 
 	vaccineAsBytes, err = json.Marshal(vaccine)
 	if err != nil {
@@ -141,7 +141,7 @@ func (s *VaccineContract) UpdateVaccineDeviceID(ctx contractapi.TransactionConte
 	vaccine := new(Vaccine)
 	_ = json.Unmarshal(vaccineAsBytes, vaccine)
 
-	vaccine.temp_device_id = newdeviceID
+	vaccine.Temp_device_id = newdeviceID
 
 	vaccineAsBytes, err1 = json.Marshal(vaccine)
 	if err1 != nil {
@@ -348,9 +348,9 @@ func (s *DeviceContract) setTemp_location(ctx contractapi.TransactionContextInte
 	device := new(Device)
 	_ = json.Unmarshal(deviceAsBytes, device)
 
-	device.present_temp = present_temp
-	device.latitude = latitude
-	device.longitude = longitude
+	device.Present_temp = present_temp
+	device.Latitude = latitude
+	device.Longitude = longitude
 
 	deviceAsBytes, err = json.Marshal(device)
 	if err != nil {

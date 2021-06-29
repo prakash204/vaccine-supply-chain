@@ -3,7 +3,7 @@ Attribute Info:
     id:
   name:
   type: client
-  affiliation: org1.department1
+  affiliation: manufacturer.department1
   maxenrollments: -1
   attributes:
     - name: hf.Revoker

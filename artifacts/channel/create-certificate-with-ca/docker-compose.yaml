@@ -7,6 +7,8 @@ services:
 
   ca_manufacturer:
     image: hyperledger/fabric-ca
+    labels:
+      service: hyperledger-fabric
     environment:
       - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
       - FABRIC_CA_SERVER_CA_NAME=ca.manufacturer.example.com
@@ -24,6 +26,8 @@ services:
 
   ca_distribution:
     image: hyperledger/fabric-ca
+    labels:
+      service: hyperledger-fabric
     environment:
       - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
       - FABRIC_CA_SERVER_CA_NAME=ca.distribution.example.com
@@ -41,6 +45,8 @@ services:
 
   ca_med:
     image: hyperledger/fabric-ca
+    labels:
+      service: hyperledger-fabric
     environment:
       - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
       - FABRIC_CA_SERVER_CA_NAME=ca.med.example.com
@@ -58,6 +64,8 @@ services:
 
   ca_beneficiary:
     image: hyperledger/fabric-ca
+    labels:
+      service: hyperledger-fabric
     environment:
       - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
       - FABRIC_CA_SERVER_CA_NAME=ca.beneficiary.example.com
@@ -75,6 +83,8 @@ services:
 
   ca_iot:
     image: hyperledger/fabric-ca
+    labels:
+      service: hyperledger-fabric
     environment:
       - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
       - FABRIC_CA_SERVER_CA_NAME=ca.iot.example.com
@@ -92,6 +102,8 @@ services:
 
   ca_orderer:
     image: hyperledger/fabric-ca
+    labels:
+      service: hyperledger-fabric
     environment:
       - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
       - FABRIC_CA_SERVER_CA_NAME=ca-orderer

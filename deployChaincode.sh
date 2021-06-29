@@ -298,7 +298,24 @@ chaincodeInvokeInit() {
 
 #chaincodeInvokeInit
 
-chaincodeInvoke() {
+chaincodeInvoke1() {
+    setGlobalsForPeer0Manufacturer
+
+    # Create Car
+    peer chaincode invoke -o localhost:7050 \
+        --ordererTLSHostnameOverride orderer.example.com \
+        --tls $CORE_PEER_TLS_ENABLED \
+        --cafile $ORDERER_CA \
+        -C $CHANNEL_NAME -n ${CC_NAME}  \
+        --peerAddresses localhost:7051 --tlsRootCertFiles $PEER0_MANUFACTURER_CA \
+        --peerAddresses localhost:8051 --tlsRootCertFiles $PEER0_DISTRIBUTION_CA \
+        --peerAddresses localhost:9051 --tlsRootCertFiles $PEER0_MED_CA \
+        --peerAddresses localhost:10051 --tlsRootCertFiles $PEER0_BENEFICIARY_CA \
+        --peerAddresses localhost:11051 --tlsRootCertFiles $PEER0_IOT_CA \
+        -c '{"function": "DeviceContract:CreateDevice","Args":["{\"id\":\"dev1\",\"min_temp\":10,\"present_temp\":15,\"max_temp\":17, \"total_lots_watching\":0}"]}'
+}
+
+chaincodeInvoke2() {
     setGlobalsForPeer0Manufacturer
 
     # Create Car
@@ -313,11 +330,11 @@ chaincodeInvoke() {
         --peerAddresses localhost:10051 --tlsRootCertFiles $PEER0_BENEFICIARY_CA \
         --peerAddresses localhost:11051 --tlsRootCertFiles $PEER0_IOT_CA \
         -c '{"function": "VaccineContract:CreateVaccine","Args":["{\"id\":\"asd23ass\",\"name\":\"covishield\",\"manufacturer\":\"nutical pharma\",\"owner\":\"nutical pharma\",\"count\":30,\"t_dev_id\":\"dev1\", \"addedAt\":221034}"]}'
-
 }
 #'{"function": "DeviceContract:CreateDevice","Args":["{\"id\":\"dev1\",\"type\":\"temp\",\"min_temp\":10,\"present_temp\":15,\"max_temp\":17, \"total_lots_watching\":0}"]}'
-#'{"function": "CreateVaccine","Args":["{\"id\":\"asd23ass\",\"name\":\"covishield\",\"manufacturer\":\"nutical pharma\",\"owner\":\"nutical pharma\",\"temp_device_id\":null, \"addedAt\":1234}"]}'
-chaincodeInvoke
+#'{"function": "VaccineContract:CreateVaccine","Args":["{\"id\":\"asd23ass\",\"name\":\"covishield\",\"manufacturer\":\"nutical pharma\",\"owner\":\"nutical pharma\",\"count\":30,\"t_dev_id\":\"dev1\", \"addedAt\":221034}"]}'
+
+#chaincodeInvoke
 
 chaincodeInvokeDeleteAsset() {
     setGlobalsForPeer0Manufacturer
@@ -333,40 +350,46 @@ chaincodeInvokeDeleteAsset() {
         --peerAddresses localhost:9051 --tlsRootCertFiles $PEER0_MED_CA \
         --peerAddresses localhost:10051 --tlsRootCertFiles $PEER0_BENEFICIARY_CA \
         --peerAddresses localhost:11051 --tlsRootCertFiles $PEER0_IOT_CA \
-        -c '{"function": "DeleteDeviceById","Args":["dev2"]}'
+        -c '{"function": "DeviceContract:DeleteDeviceById","Args":["dev2"]}'
 
 }
 #chaincodeInvokeDeleteAsset
 
 chaincodeQuery() {
     setGlobalsForPeer0Manufacturer
-    peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "GetDeviceById","Args":["dev1"]}'
+    peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "DeviceContract:GetDeviceById","Args":["dev1"]}'
 }
 
 # chaincodeQuery
 
 # Run this function if you add any new dependency in chaincode
-#presetup
+presetup
 
-#packageChaincode
-#installChaincode
-#queryInstalled
+packageChaincode
+installChaincode
+queryInstalled
 
-#approveForMyManufacturer
-#checkCommitReadynessManufacturer
-#approveForMyDistribution
-#checkCommitReadynessDistribution
-#approveForMyMed
+approveForMyManufacturer
+checkCommitReadynessManufacturer
+approveForMyDistribution
+checkCommitReadynessManufacturer
+approveForMyMed
+checkCommitReadynessManufacturer
 #checkCommitReadynessMed
-#approveForMyBeneficiary
+approveForMyBeneficiary
+checkCommitReadynessManufacturer
 #checkCommitReadynessBeneficiary
-#approveForMyIot
-#checkCommitReadynessIot
+approveForMyIot
+checkCommitReadynessManufacturer#checkCommitReadynessIot
 
-#commitChaincodeDefination
-#queryCommitted
-#chaincodeInvokeInit
-#sleep 5
-#chaincodeInvoke
-#sleep 3
-#chaincodeQuery
+
+commitChaincodeDefination
+queryCommitted
+chaincodeInvokeInit
+sleep 5
+chaincodeInvoke1
+sleep 3
+chaincodeInvoke2
+sleep 3
+chaincodeInvokeDeleteAsset
+chaincodeQuery

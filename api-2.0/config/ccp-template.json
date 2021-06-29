@@ -1,8 +1,8 @@
 {
-    "name": "first-network-org${ORG}",
+    "name": "artifacts-test-${ORG2}",
     "version": "1.0.0",
     "client": {
-        "organization": "Org${ORG}",
+        "organization": "${ORG1}",
         "connection": {
             "timeout": {
                 "peer": {
@@ -12,34 +12,34 @@
         }
     },
     "organizations": {
-        "Org${ORG}": {
-            "mspid": "Org${ORG}MSP",
+        "${ORG1}": {
+            "mspid": "${ORG1}MSP",
             "peers": [
-                "peer0.org${ORG}.example.com"
+                "peer0.${ORG2}.example.com"
             ],
             "certificateAuthorities": [
-                "ca.org${ORG}.example.com"
+                "ca.${ORG2}.example.com"
             ]
         }
     },
     "peers": {
-        "peer0.org${ORG}.example.com": {
+        "peer0.${ORG2}.example.com": {
             "url": "grpcs://localhost:${P0PORT}",
             "tlsCACerts": {
                 "pem": "${PEERPEM}"
             },
             "grpcOptions": {
-                "ssl-target-name-override": "peer0.org${ORG}.example.com",
-                "hostnameOverride": "peer0.org${ORG}.example.com"
+                "ssl-target-name-override": "peer0.${ORG2}.example.com",
+                "hostnameOverride": "peer0.${ORG2}.example.com"
             }
         }
 
-	
+
     },
     "certificateAuthorities": {
-        "ca.org${ORG}.example.com": {
+        "ca.${ORG2}.example.com": {
             "url": "https://localhost:${CAPORT}",
-            "caName": "ca.org${ORG}.example.com",
+            "caName": "ca.${ORG2}.example.com",
             "tlsCACerts": {
                 "pem": "${CAPEM}"
             },
