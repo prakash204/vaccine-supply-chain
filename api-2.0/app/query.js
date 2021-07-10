@@ -27,7 +27,7 @@ const query = async (channelName, chaincodeName, args, fcn, username, org_name) 
             console.log(`An identity for the user ${username} does not exist in the wallet, so registering user`);
             await helper.getRegisteredUser(username, org_name, true)
             identity = await wallet.get(username);
-            console.log('Run the registerUser.js application before retrying');
+            console.log('registerUser application before retrying');
             return;
         }
 
@@ -45,14 +45,30 @@ const query = async (channelName, chaincodeName, args, fcn, username, org_name) 
         let result;
 
         switch (fcn) {
-            case "GetDocumentUsingCarContract":
+            case "GetHistoryForVaccineAsset":
                 console.log("=============")
-                result = await contract.evaluateTransaction('SmartContract:'+fcn, args[0]);
+                result = await contract.evaluateTransaction('VaccineContract:'+fcn, args[0]);
                 break;
-            case "GetHistoryForAsset":
-            case "GetCarById":
+            case "GetHistoryForRequirementAsset":
                 console.log("=============")
-                result = await contract.evaluateTransaction('SmartContract:'+fcn, args[0]);
+                result = await contract.evaluateTransaction('RequirementContract:'+fcn, args[0]);
+                break;
+            case "GetHistoryForDeviceAsset":
+                console.log("=============")
+                result = await contract.evaluateTransaction('DeviceContract:'+fcn, args[0]);
+                break;
+
+            case "GetVacccineById":
+                console.log("=============")
+                result = await contract.evaluateTransaction('VaccineContract:'+fcn, args[0]);
+                break;
+            case "GetDeviceById":
+                console.log("=============")
+                result = await contract.evaluateTransaction('DeviceContract:'+fcn, args[0]);
+                break;
+            case "GetRequirementByUsername":
+                console.log("=============")
+                result = await contract.evaluateTransaction('RequirementContract:'+fcn, args[0]);
                 break;
             default:
                 break;
@@ -63,7 +79,9 @@ const query = async (channelName, chaincodeName, args, fcn, username, org_name) 
 
         result = JSON.parse(result.toString());
         return result
+
     } catch (error) {
+
         console.error(`Failed to evaluate transaction: ${error}`);
         return error.message
 

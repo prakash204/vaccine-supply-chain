@@ -10,15 +10,15 @@ EnrollAdmin() {
 
 RegisterNewAdmin() {
     # export FABRIC_CA_CLIENT_HOME=${PWD}/clients/admin2
-    # fabric-ca-client register --id.name admin2 --id.affiliation manufacturer.department1 --id.attrs 'hf.Revoker=true,admin=true:ecert'
-    # fabric-ca-client register -d --id.name admin2 --id.affiliation manufacturer.department1 --id.attrs '"hf.Registrar.Roles=peer,client"' --id.attrs hf.Revoker=true
+    # fabric-ca-client register --id.name admin2 --id.affiliation org1.department1 --id.attrs 'hf.Revoker=true,admin=true:ecert'
+    # fabric-ca-client register -d --id.name admin2 --id.affiliation org1.department1 --id.attrs '"hf.Registrar.Roles=peer,client"' --id.attrs hf.Revoker=true
     fabric-ca-client register \
         --caname ca.manufacturer.example.com \
         --id.name admin3 \
         --id.secret admin3pw \
         --id.type admin \
         --id.attrs 'hf.Revoker=true,admin=true:ecert' \
-        --id.affiliation manufacturer.department1 \
+        --id.affiliation org1.department1 \
         --tls.certfiles ${PWD}/fabric-ca/tls-cert.pem
 }
 
@@ -30,7 +30,7 @@ RegisterPeer() {
         --id.name peer4 \
         --id.secret peer4pw \
         --id.type peer \
-        --id.affiliation manufacturer.department1 \
+        --id.affiliation org1.department1 \
         --id.attrs '"hf.Registrar.Roles=peer,client"' \
         --id.attrs hf.Revoker=true \
         --tls.certfiles ${PWD}/fabric-ca/tls-cert.pem
@@ -39,7 +39,7 @@ RegisterPeer() {
     #     --caname ca.manufacturer.example.com \
     #     --id.name peer3 \
     #     --id.type peer \
-    #     --id.affiliation manufacturer.department1 \
+    #     --id.affiliation org1.department1 \
     #     --id.attrs '"hf.Registrar.Roles=peer,client"' \
     #     --id.attrs hf.Revoker=true \
     #     --tls.certfiles ${PWD}/fabric-ca/tls-cert.pem

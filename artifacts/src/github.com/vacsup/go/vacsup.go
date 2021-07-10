@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"strconv"
 	"time"
-	"reflect"
 
 	"github.com/hyperledger/fabric-contract-api-go/contractapi"
 	"github.com/hyperledger/fabric/common/flogging"
@@ -19,6 +18,11 @@ type VaccineContract struct {
 type DeviceContract struct {
 	contractapi.Contract
 }
+
+type RequirementContract struct {
+	contractapi.Contract
+}
+
 
 var logger = flogging.MustGetLogger("vacsup_cc")
 
@@ -42,6 +46,13 @@ type Device struct {
 	Total_lots uint64 `json:"total_lots_watching"`
 }
 
+type Requirement struct {
+	Username string `json:"username"`
+	Orgname string `json:"orgname"`
+	Level string `json:"level"`
+	Count uint64 `json:"count"`
+}
+
 func (s *VaccineContract) CreateVaccine(ctx contractapi.TransactionContextInterface,vaccineData string) (string, error) {
 
 	if len(vaccineData) == 0 {
@@ -59,7 +70,7 @@ func (s *VaccineContract) CreateVaccine(ctx contractapi.TransactionContextInterf
 		return "", fmt.Errorf("Failed while marshling vaccine. %s", err.Error())
 	}
 
-	if len(vaccine.Temp_device_id) == 0 {
+	/*if len(vaccine.Temp_device_id) == 0 {
 		return "", fmt.Errorf("Please pass the correct device id")
 	} else {
 
@@ -71,10 +82,10 @@ func (s *VaccineContract) CreateVaccine(ctx contractapi.TransactionContextInterf
 
 		temp := ctx.GetStub().InvokeChaincode("DeviceContract", queryArgs, "mychannel")
 
-		if reflect.TypeOf(temp).String() != "Device" {
-			return "",fmt.Errorf("device not found.")
+		if temp.Status != "OK" {
+			return "",fmt.Errorf("device not Found.%s",temp.Payload)
 		}
-	}
+	}*/
 
 	ctx.GetStub().SetEvent("CreateAsset", vaccineAsBytes)
 
@@ -154,7 +165,7 @@ func (s *VaccineContract) UpdateVaccineDeviceID(ctx contractapi.TransactionConte
 
 }
 
-func (s *VaccineContract) GetHistoryForAsset(ctx contractapi.TransactionContextInterface, vaccineID string) (string, error) {
+func (s *VaccineContract) GetHistoryForVaccineAsset(ctx contractapi.TransactionContextInterface, vaccineID string) (string, error) {
 
 	resultsIterator, err := ctx.GetStub().GetHistoryForKey(vaccineID)
 	if err != nil {
@@ -246,7 +257,6 @@ func (s *VaccineContract) GetContractsForQuery(ctx contractapi.TransactionContex
 	return queryResults, nil
 
 }
-
 
 func (s *VaccineContract) getQueryResultForQueryString(ctx contractapi.TransactionContextInterface, queryString string) ([]Vaccine, error) {
 
@@ -371,9 +381,170 @@ func (s *DeviceContract) DeleteDeviceById(ctx contractapi.TransactionContextInte
 	return ctx.GetStub().GetTxID(), ctx.GetStub().DelState(deviceID)
 }
 
+func (s *DeviceContract) GetHistoryForDeviceAsset(ctx contractapi.TransactionContextInterface, deviceID string) (string, error) {
+
+	resultsIterator, err := ctx.GetStub().GetHistoryForKey(deviceID)
+	if err != nil {
+		return "", fmt.Errorf(err.Error())
+	}
+	defer resultsIterator.Close()
+
+	var buffer bytes.Buffer
+	buffer.WriteString("[")
+
+	bArrayMemberAlreadyWritten := false
+	for resultsIterator.HasNext() {
+		response, err := resultsIterator.Next()
+		if err != nil {
+			return "", fmt.Errorf(err.Error())
+		}
+		if bArrayMemberAlreadyWritten == true {
+			buffer.WriteString(",")
+		}
+		buffer.WriteString("{\"TxId\":")
+		buffer.WriteString("\"")
+		buffer.WriteString(response.TxId)
+		buffer.WriteString("\"")
+
+		buffer.WriteString(", \"Value\":")
+		if response.IsDelete {
+			buffer.WriteString("null")
+		} else {
+			buffer.WriteString(string(response.Value))
+		}
+
+		buffer.WriteString(", \"Timestamp\":")
+		buffer.WriteString("\"")
+		buffer.WriteString(time.Unix(response.Timestamp.Seconds, int64(response.Timestamp.Nanos)).String())
+		buffer.WriteString("\"")
+
+		buffer.WriteString(", \"IsDelete\":")
+		buffer.WriteString("\"")
+		buffer.WriteString(strconv.FormatBool(response.IsDelete))
+		buffer.WriteString("\"")
+
+		buffer.WriteString("}")
+		bArrayMemberAlreadyWritten = true
+	}
+	buffer.WriteString("]")
+
+	return string(buffer.Bytes()), nil
+}
+
+
+func (s *RequirementContract) CreateRequirement(ctx contractapi.TransactionContextInterface,requirementData string) (string, error) {
+
+	if len(requirementData) == 0 {
+		return "", fmt.Errorf("Please pass the correct requirement data")
+	}
+
+	var requirement Requirement
+	err := json.Unmarshal([]byte(requirementData), &requirement)
+	if err != nil {
+		return "", fmt.Errorf("Failed while unmarshling requirement. %s", err.Error())
+	}
+
+	requirementAsBytes, err := json.Marshal(requirement)
+	if err != nil {
+		return "", fmt.Errorf("Failed while marshling requirement. %s", err.Error())
+	}
+
+	temp, err := ctx.GetStub().GetState(requirement.Username)
+
+	if temp != nil {
+		return "", fmt.Errorf("%s already exists", requirement.Username)
+	}
+
+	ctx.GetStub().SetEvent("CreateAsset", requirementAsBytes)
+
+
+	return ctx.GetStub().GetTxID(), ctx.GetStub().PutState(requirement.Username, requirementAsBytes)
+}
+
+func (s *RequirementContract) GetRequirementByUsername(ctx contractapi.TransactionContextInterface, requirementUsername string) (*Requirement, error) {
+	if len(requirementUsername) == 0 {
+		return nil, fmt.Errorf("Please provide correct contract Username")
+		// return shim.Error("Incorrect number of arguments. Expecting 1")
+	}
+
+	requirementAsBytes, err := ctx.GetStub().GetState(requirementUsername)
+
+	if err != nil {
+		return nil, fmt.Errorf("Failed to read from world state. %s", err.Error())
+	}
+
+	if requirementAsBytes == nil {
+		return nil, fmt.Errorf("%s does not exist", requirementUsername)
+	}
+
+	requirement := new(Requirement)
+	_ = json.Unmarshal(requirementAsBytes, requirement)
+
+	return requirement, nil
+
+}
+
+func (s *RequirementContract) DeleteRequirementByUsername(ctx contractapi.TransactionContextInterface, requirementUsername string) (string, error) {
+	if len(requirementUsername) == 0 {
+		return "", fmt.Errorf("Please provide correct contract Id")
+	}
+
+	return ctx.GetStub().GetTxID(), ctx.GetStub().DelState(requirementUsername)
+}
+
+func (s *RequirementContract) GetHistoryForRequirementAsset(ctx contractapi.TransactionContextInterface, requirementID string) (string, error) {
+
+	resultsIterator, err := ctx.GetStub().GetHistoryForKey(requirementID)
+	if err != nil {
+		return "", fmt.Errorf(err.Error())
+	}
+	defer resultsIterator.Close()
+
+	var buffer bytes.Buffer
+	buffer.WriteString("[")
+
+	bArrayMemberAlreadyWritten := false
+	for resultsIterator.HasNext() {
+		response, err := resultsIterator.Next()
+		if err != nil {
+			return "", fmt.Errorf(err.Error())
+		}
+		if bArrayMemberAlreadyWritten == true {
+			buffer.WriteString(",")
+		}
+		buffer.WriteString("{\"TxId\":")
+		buffer.WriteString("\"")
+		buffer.WriteString(response.TxId)
+		buffer.WriteString("\"")
+
+		buffer.WriteString(", \"Value\":")
+		if response.IsDelete {
+			buffer.WriteString("null")
+		} else {
+			buffer.WriteString(string(response.Value))
+		}
+
+		buffer.WriteString(", \"Timestamp\":")
+		buffer.WriteString("\"")
+		buffer.WriteString(time.Unix(response.Timestamp.Seconds, int64(response.Timestamp.Nanos)).String())
+		buffer.WriteString("\"")
+
+		buffer.WriteString(", \"IsDelete\":")
+		buffer.WriteString("\"")
+		buffer.WriteString(strconv.FormatBool(response.IsDelete))
+		buffer.WriteString("\"")
+
+		buffer.WriteString("}")
+		bArrayMemberAlreadyWritten = true
+	}
+	buffer.WriteString("]")
+
+	return string(buffer.Bytes()), nil
+}
+
 func main() {
 
-	chaincode, err := contractapi.NewChaincode(new(VaccineContract), new(DeviceContract))
+	chaincode, err := contractapi.NewChaincode(new(VaccineContract), new(DeviceContract), new(RequirementContract))
 	if err != nil {
 		fmt.Printf("Error create vaccine chaincode: %s", err.Error())
 		return

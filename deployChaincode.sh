@@ -380,7 +380,8 @@ approveForMyBeneficiary
 checkCommitReadynessManufacturer
 #checkCommitReadynessBeneficiary
 approveForMyIot
-checkCommitReadynessManufacturer#checkCommitReadynessIot
+checkCommitReadynessManufacturer
+#checkCommitReadynessIot
 
 
 commitChaincodeDefination

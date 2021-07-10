@@ -2,7 +2,6 @@
 const log4js = require('log4js');
 const logger = log4js.getLogger('BasicNetwork');
 const bodyParser = require('body-parser');
-const http = require('http')
 const util = require('util');
 const express = require('express')
 const app = express();
@@ -11,6 +10,7 @@ const jwt = require('jsonwebtoken');
 const bearerToken = require('express-bearer-token');
 const cors = require('cors');
 const constants = require('./config/constants.json')
+const sha256 = require('sha256');
 
 const host = process.env.HOST || constants.host;
 const port = process.env.PORT || constants.port;
@@ -64,11 +64,9 @@ app.use((req, res, next) => {
     });
 });
 
-var server = http.createServer(app).listen(port, function () {console.log(`Server started on ${port}`) });
-
+app.listen(4000);
 logger.info('****************** SERVER STARTED ************************');
 logger.info('***************  http://%s:%s  ******************', host, port);
-server.timeout = 240000;
 
 function getErrorMessage(field) {
     var response = {
@@ -78,8 +76,76 @@ function getErrorMessage(field) {
     return response;
 }
 
-// Register and enroll user
 app.post('/users', async function (req, res) {
+    var username = req.body.username;
+    var orgName = req.body.orgName;
+    logger.debug('End point : /users');
+    logger.debug('User name : ' + username);
+    logger.debug('Org name  : ' + orgName);
+    if (!username) {
+        res.json(getErrorMessage('\'username\''));
+        return;
+    }
+    if (!orgName) {
+        res.json(getErrorMessage('\'orgName\''));
+        return;
+    }
+
+    var token = jwt.sign({
+        exp: Math.floor(Date.now() / 1000) + parseInt(constants.jwt_expiretime),
+        username: username,
+        orgName: orgName
+    }, app.get('secret'));
+
+    let response = await helper.getRegisteredUser(username, orgName, true);
+
+    logger.debug('-- returned from registering the username %s for organization %s', username, orgName);
+    if (response && typeof response !== 'string') {
+        logger.debug('Successfully registered the username %s for organization %s', username, orgName);
+        response.token = token;
+        res.json(response);
+    } else {
+        logger.debug('Failed to register the username %s for organization %s with::%s', username, orgName, response);
+        res.json({ success: false, message: response });
+    }
+
+});
+// Register and enroll user
+app.post('/register', async function (req, res) {
+    var username = req.body.username;
+    var orgName = req.body.orgName;
+    var passcode = req.body.passcode;
+
+    if (!username) {
+        res.json(getErrorMessage('\'username\''));
+        return;
+    }
+    if (!orgName) {
+        res.json(getErrorMessage('\'orgName\''));
+        return;
+    }
+    if (!passcode) {
+        res.json(getErrorMessage('\'passcode\''));
+        return;
+    }
+
+    const hash = sha256(username + orgName + passcode);
+
+    let response = await helper.getRegisteredUser(hash, orgName);
+
+    logger.debug('-- returned from registering the username %s for organization %s', username, orgName);
+    if (response && typeof response !== 'string') {
+        logger.debug('Successfully registered the username %s for organization %s', username, orgName);
+        res.json(response);
+    } else {
+        logger.debug('Failed to register the username %s for organization %s with::%s', username, orgName, response);
+        res.json({ success: false, message: response });
+    }
+
+});
+// Login and get jwt
+app.post('/users/login', async function (req, res) {
+    console.log(req.orgname);
     var username = req.body.username;
     var orgName = req.body.orgName;
     var passcode = req.body.passcode;
@@ -96,93 +162,6 @@ app.post('/users', async function (req, res) {
         return;
     }
     if (!passcode) {
-        res.json(getErrorMessage('\'passcode\''));
-        return;
-    }
-
-    var token = jwt.sign({
-        exp: Math.floor(Date.now() / 1000) + parseInt(constants.jwt_expiretime),
-        username: username,
-        orgName: orgName,
-        passcode: passcode
-    }, app.get('secret'));
-    console.log("toekn:"+token);
-
-    let response = await helper.getRegisteredUser(username, orgName, true);
-
-    logger.debug('-- returned from registering the username %s for organization %s', username, orgName);
-    if (response && typeof response !== 'string') {
-        logger.debug('Successfully registered the username %s for organization %s', username, orgName);
-        response.token = token;
-        res.json(response);
-    } else {
-        logger.debug('Failed to register the username %s for organization %s with::%s', username, orgName, response);
-        res.json({ success: false, message: response });
-    }
-
-});
-
-// Register and enroll user
-app.post('/register', async function (req, res) {
-    var username = req.body.username;
-    var orgName = req.body.orgName;
-    var passcode = req.body.passcode;
-    logger.debug('End point : /users');
-    logger.debug('User name : ' + username);
-    logger.debug('Org name  : ' + orgName);
-    if (!username) {
-        res.json(getErrorMessage('\'username\''));
-        return;
-    }
-    if (!orgName) {
-        res.json(getErrorMessage('\'orgName\''));
-        return;
-    }
-    if (!passcode) {
-        res.json(getErrorMessage('\'passcode\''));
-        return;
-    }
-
-    var token = jwt.sign({
-        exp: Math.floor(Date.now() / 1000) + parseInt(constants.jwt_expiretime),
-        username: username,
-        orgName: orgName,
-        passcode: passcode
-    }, app.get('secret'));
-
-    console.log(token)
-
-    let response = await helper.registerAndGerSecret(username, orgName);
-
-    logger.debug('-- returned from registering the username %s for organization %s', username, orgName);
-    if (response && typeof response !== 'string') {
-        logger.debug('Successfully registered the username %s for organization %s', username, orgName);
-        response.token = token;
-        res.json(response);
-    } else {
-        logger.debug('Failed to register the username %s for organization %s with::%s', username, orgName, response);
-        res.json({ success: false, message: response });
-    }
-
-});
-
-// Login and get jwt
-app.post('/users/login', async function (req, res) {
-    var username = req.body.username;
-    var orgName = req.body.orgName;
-    var passcode = req.body.passcode;
-    logger.debug('End point : /users');
-    logger.debug('User name : ' + username);
-    logger.debug('Org name  : ' + orgName);
-    if (!username) {
-        res.json(getErrorMessage('\'username\''));
-        return;
-    }
-    if (!orgName) {
-        res.json(getErrorMessage('\'orgName\''));
-        return;
-    }
-    if (!passcode) {
       res.json(getErrorMessage('\'passcode\''));
     }
 
@@ -190,24 +169,23 @@ app.post('/users/login', async function (req, res) {
         exp: Math.floor(Date.now() / 1000) + parseInt(constants.jwt_expiretime),
         username: username,
         orgName: orgName,
-        passcode: passcode
     }, app.get('secret'));
 
-    let isUserRegistered = await helper.isUserRegistered(username, orgName);
+    const hash = sha256( username + orgName + passcode );
+
+    let isUserRegistered = await helper.isUserRegistered(hash, orgName);
 
     if (isUserRegistered) {
         res.json({ success: true, message: { token: token } });
-
     } else {
         res.json({ success: false, message: `User with username ${username} is not registered with ${orgName}, Please register first.` });
     }
 });
-
-
 // Invoke transaction on chaincode on target peers
 app.post('/channels/:channelName/chaincodes/:chaincodeName', async function (req, res) {
     try {
         logger.debug('==================== INVOKE ON CHAINCODE ==================');
+        console.log(req.orgname);
         var peers = req.body.peers;
         var chaincodeName = req.params.chaincodeName;
         var channelName = req.params.channelName;
@@ -302,13 +280,16 @@ app.get('/channels/:channelName/chaincodes/:chaincodeName', async function (req,
         }
 
         res.send(response_payload);
+
     } catch (error) {
+
         const response_payload = {
             result: null,
             error: error.name,
             errorData: error.message
         }
         res.send(response_payload)
+
     }
 });
 

@@ -9,10 +9,9 @@ const util = require('util')
 const helper = require('./helper');
 const { blockListener, contractListener } = require('./Listeners');
 
-const invokeTransaction = async (channelName, chaincodeName, fcn, args, username, org_name, transientData) => {
+const invokeTransaction = async ( channelName, chaincodeName, fcn, args, username, org_name, transientData) => {
     try {
         const ccp = await helper.getCCP(org_name);
-
         const walletPath = await helper.getWalletPath(org_name);
         const wallet = await Wallets.newFileSystemWallet(walletPath);
         console.log(`Wallet path: ${walletPath}`);
@@ -26,39 +25,44 @@ const invokeTransaction = async (channelName, chaincodeName, fcn, args, username
             return;
         }
 
-
         const connectOptions = {
-            wallet, identity: username, discovery: { enabled: true, asLocalhost: true }
-            // eventHandlerOptions: EventStrategies.NONE
+            wallet, identity: username, discovery: { enabled: true, asLocalhost: true },
+            eventHandlerOptions: EventStrategies.NONE
         }
-
         const gateway = new Gateway();
         await gateway.connect(ccp, connectOptions);
 
         const network = await gateway.getNetwork(channelName);
         const contract = network.getContract(chaincodeName);
 
-        // await contract.addContractListener(contractListener);
-        // await network.addBlockListener(blockListener);
-
+        await contract.addContractListener(contractListener);
+        await network.addBlockListener(blockListener);
 
         // Multiple smartcontract in one chaincode
         let result;
         let message;
 
         switch (fcn) {
-            case "CreateCar":
-                result = await contract.submitTransaction('SmartContract:'+fcn, args[0]);
+            case "CreateVaccine":
+                const Vaccine = JSON.parse(args[0]);
+                prereq = await contract.evaluateTransaction('DeviceContract:GetDeviceById',Vaccine.t_dev_id)
+                if (prereq != "") {
+                  result = await contract.submitTransaction('VaccineContract:'+fcn, args[0]);
+                  result = {txid: result.toString()}
+                } else result = "Device not found";
+                break;
+            case "CreateDevice":
+                result = await contract.submitTransaction('DeviceContract:'+fcn, args[0]);
                 result = {txid: result.toString()}
                 break;
-            case "UpdateCarOwner":
+            case "UpdateVaccineOwner":
                 console.log("=============")
-                result = await contract.submitTransaction('SmartContract:'+fcn, args[0], args[1]);
+                result = await contract.submitTransaction('VaccineContract:'+fcn, args[0], args[1]);
                 result = {txid: result.toString()}
                 break;
-            case "CreateDocument":
-                result = await contract.submitTransaction('DocumentContract:'+fcn, args[0]);
-                console.log(result.toString())
+            case "setTemp_location":
+                console.log("=============")
+                result = await contract.submitTransaction('DeviceContract:'+fcn, args[0], args[1], args[2], args[3] );
                 result = {txid: result.toString()}
                 break;
             default:
