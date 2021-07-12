@@ -66,7 +66,6 @@ app.use((req, res, next) => {
 
 app.listen(4000);
 logger.info('****************** SERVER STARTED ************************');
-logger.info('***************  http://%s:%s  ******************', host, port);
 
 function getErrorMessage(field) {
     var response = {
@@ -129,7 +128,7 @@ app.post('/register', async function (req, res) {
         return;
     }
 
-    const hash = sha256(username + orgName + passcode);
+    const hash = sha256(username + orgName);
 
     let response = await helper.getRegisteredUser(hash, orgName);
 
@@ -171,7 +170,7 @@ app.post('/users/login', async function (req, res) {
         orgName: orgName,
     }, app.get('secret'));
 
-    const hash = sha256( username + orgName + passcode );
+    const hash = sha256( username + orgName );
 
     let isUserRegistered = await helper.isUserRegistered(hash, orgName);
 
@@ -192,6 +191,7 @@ app.post('/channels/:channelName/chaincodes/:chaincodeName', async function (req
         var fcn = req.body.fcn;
         var args = req.body.args;
         var transient = req.body.transient;
+
         console.log(`Transient data is ;${transient}`)
         logger.debug('channelName  : ' + channelName);
         logger.debug('chaincodeName : ' + chaincodeName);

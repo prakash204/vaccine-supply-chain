@@ -1,0 +1,25 @@
+.header {
+  background-color: #ffffff;
+  position: fixed;
+  z-index : 1;
+  width: 100%;
+  top:0;
+  left:0;
+  padding: 20px;
+}
+
+.header > div {
+  padding : 5px;
+  margin-right : 20px;
+}
+
+.brand {
+  float:left;
+}
+.components {
+  float: right;
+}
+
+a {
+  margin-right : 15px;
+}

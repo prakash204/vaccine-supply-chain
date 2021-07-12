@@ -5,6 +5,8 @@ const path = require("path")
 const log4js = require('log4js');
 const logger = log4js.getLogger('BasicNetwork');
 const util = require('util')
+const sha256 = require('sha256');
+
 
 const helper = require('./helper');
 const { blockListener, contractListener } = require('./Listeners');
@@ -16,7 +18,7 @@ const invokeTransaction = async ( channelName, chaincodeName, fcn, args, usernam
         const wallet = await Wallets.newFileSystemWallet(walletPath);
         console.log(`Wallet path: ${walletPath}`);
 
-        let identity = await wallet.get(username);
+        let identity = await wallet.get(sha256(username+org_name));
         if (!identity) {
             console.log(`An identity for the user ${username} does not exist in the wallet, so registering user`);
             await helper.getRegisteredUser(username, org_name, true)
@@ -26,7 +28,7 @@ const invokeTransaction = async ( channelName, chaincodeName, fcn, args, usernam
         }
 
         const connectOptions = {
-            wallet, identity: username, discovery: { enabled: true, asLocalhost: true },
+            wallet, identity: sha256(username+org_name), discovery: { enabled: true, asLocalhost: true },
             eventHandlerOptions: EventStrategies.NONE
         }
         const gateway = new Gateway();
@@ -44,15 +46,15 @@ const invokeTransaction = async ( channelName, chaincodeName, fcn, args, usernam
 
         switch (fcn) {
             case "CreateVaccine":
-                const Vaccine = JSON.parse(args[0]);
-                prereq = await contract.evaluateTransaction('DeviceContract:GetDeviceById',Vaccine.t_dev_id)
+                const Vaccine = args;
+                prereq = await contract.evaluateTransaction('DeviceContract:GetDeviceById',Vaccine[5])
                 if (prereq != "") {
-                  result = await contract.submitTransaction('VaccineContract:'+fcn, args[0]);
+                  result = await contract.submitTransaction('VaccineContract:'+fcn, JSON.stringify(args));
                   result = {txid: result.toString()}
                 } else result = "Device not found";
                 break;
             case "CreateDevice":
-                result = await contract.submitTransaction('DeviceContract:'+fcn, args[0]);
+                result = await contract.submitTransaction('DeviceContract:'+fcn,JSON.stringify(args));
                 result = {txid: result.toString()}
                 break;
             case "UpdateVaccineOwner":

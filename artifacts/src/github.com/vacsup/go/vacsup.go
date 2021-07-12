@@ -287,17 +287,18 @@ func (s *VaccineContract) getQueryResultForQueryString(ctx contractapi.Transacti
 }
 
 
-func (s *DeviceContract) CreateDevice(ctx contractapi.TransactionContextInterface,deviceData string) (string, error) {
+func (s *DeviceContract) CreateDevice(ctx contractapi.TransactionContextInterface,deviceData []string) (string, error) {
 
-	if len(deviceData) == 0 {
-		return "", fmt.Errorf("Please pass the correct device data")
+	if len(deviceData) != 7 {
+		return "", fmt.Errorf("Incorrect number of arguments. Expecting 7")
 	}
 
-	var device Device
-	err := json.Unmarshal([]byte(deviceData), &device)
-	if err != nil {
-		return "", fmt.Errorf("Failed while unmarshling device. %s", err.Error())
-	}
+	min_temp, _ := strconv.ParseUint(deviceData[1],0,64)
+	max_temp, _ := strconv.ParseUint(deviceData[3],0,64)
+	present_temp, _ := strconv.ParseUint(deviceData[2],0,64)
+	total_lots, _ :=strconv.ParseUint(deviceData[6],0,64)
+
+	var device = Device{ID: deviceData[0],Min_temp: min_temp,Present_temp : present_temp,Max_temp : max_temp,Latitude:"",Longitude:"",Total_lots:total_lots}
 
 	deviceAsBytes, err := json.Marshal(device)
 	if err != nil {
