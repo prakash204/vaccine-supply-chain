@@ -4,6 +4,16 @@ import AddDevice from './adddevice';
 import Header from './base/header';
 import './App.css';
 
+const Tabs = () => {
+  return (
+    <div className="tabs">
+      <ul>
+        <li><button onClick={Dashboard.addVaccine}>Add Vaccine</button></li>
+        <li><button onClick={Dashboard.addDevice}>Add Device</button></li>
+      </ul>
+    </div>
+)};
+
 class Dashboard extends Component {
 
   constructor(props) {

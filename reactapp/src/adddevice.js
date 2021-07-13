@@ -17,13 +17,13 @@ class AddVaccine extends Component {
       const min_temp = event.target.elements.min_temp.value;
       const max_temp = event.target.elements.max_temp.value;
       const token = localStorage.getItem('token');
-
+      const dt = new Date().toString();
       const data = {
         fcn:"CreateDevice",
         peers:["peer0.manufacturer.example.com","peer0.distribution.example.com","peer0.med.example.com","peer0.beneficiary.example.com","peer0.iot.example.com"],
         chaincodeName:"vacsup_cc",
         channelName:"mychannel",
-        args:[devid,min_temp,"0",max_temp,"0","0","0"],
+        args:[devid,min_temp,"0",max_temp,"0","0","0",dt],
       };
 
       /*const requestOptions = {

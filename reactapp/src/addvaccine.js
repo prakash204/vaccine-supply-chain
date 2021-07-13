@@ -19,14 +19,14 @@ class AddVaccine extends Component {
       const count = event.target.elements.count.value;
       const manufacturer = localStorage.getItem('username');
       const token = localStorage.getItem('token');
-      const time = Math.floor(Date.now() / 1000);
+      const tym = Math.floor(Date.now() / 1000);
 
       const data = {
         fcn:"CreateVaccine",
         peers:["peer0.manufacturer.example.com","peer0.distribution.example.com","peer0.med.example.com","peer0.beneficiary.example.com","peer0.iot.example.com"],
         chaincodeName:"vacsup_cc",
         channelName:"mychannel",
-        args:[{"id":vacid},{"name":vacname},{"manufacturer":manufacturer},{"owner":manufacturer},{"count":count},{"t_dev_id":devid},{"addedAt":time}],
+        args:[vacid,vacname,manufacturer,manufacturer,count,devid,String(tym)],
       };
 
       /*const requestOptions = {

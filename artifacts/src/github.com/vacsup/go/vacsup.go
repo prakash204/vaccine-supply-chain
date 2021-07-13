@@ -44,6 +44,7 @@ type Device struct {
 	Latitude string `json:latitude`
 	Longitude string `json:longitude`
 	Total_lots uint64 `json:"total_lots_watching"`
+	Time string `json:"time"`
 }
 
 type Requirement struct {
@@ -53,17 +54,20 @@ type Requirement struct {
 	Count uint64 `json:"count"`
 }
 
-func (s *VaccineContract) CreateVaccine(ctx contractapi.TransactionContextInterface,vaccineData string) (string, error) {
+type QueryResult struct {
+	Key    string `json:"Key"`
+	Record *Vaccine
+}
 
-	if len(vaccineData) == 0 {
+func (s *VaccineContract) CreateVaccine(ctx contractapi.TransactionContextInterface,vaccineData []string) (string, error) {
+
+	if len(vaccineData) != 7 {
 		return "", fmt.Errorf("Please pass the correct vaccine data")
 	}
+	count , _ := strconv.ParseUint(vaccineData[4], 0, 64)
+	addedAt , _ := strconv.ParseUint(vaccineData[6], 0, 64)
 
-	var vaccine Vaccine
-	err := json.Unmarshal([]byte(vaccineData), &vaccine)
-	if err != nil {
-		return "", fmt.Errorf("Failed while unmarshling vaccine. %s", err.Error())
-	}
+	var vaccine = Vaccine{ ID:vaccineData[0], Name:vaccineData[1], Manufacturer:vaccineData[2], Owner:vaccineData[3], Count:count, Temp_device_id:vaccineData[5], AddedAt:addedAt}
 
 	vaccineAsBytes, err := json.Marshal(vaccine)
 	if err != nil {
@@ -286,10 +290,75 @@ func (s *VaccineContract) getQueryResultForQueryString(ctx contractapi.Transacti
 	return results, nil
 }
 
+func (s *VaccineContract) GetAllVaccines(ctx contractapi.TransactionContextInterface) ([]QueryResult, error) {
+	startKey := ""
+	endKey := ""
+
+	resultsIterator, err := ctx.GetStub().GetStateByRange(startKey, endKey)
+
+	if err != nil {
+		return nil, err
+	}
+	defer resultsIterator.Close()
+
+	results := []QueryResult{}
+
+	for resultsIterator.HasNext() {
+		queryResponse, err := resultsIterator.Next()
+
+		if err != nil {
+			return nil, err
+		}
+
+		vaccine := new(Vaccine)
+		_ = json.Unmarshal(queryResponse.Value, vaccine)
+
+		queryResult := QueryResult{Key: queryResponse.Key, Record: vaccine}
+		results = append(results, queryResult)
+	}
+
+	return results, nil
+}
+
+func (s *VaccineContract) GetMyVaccine(ctx contractapi.TransactionContextInterface, owner string) ([]QueryResult, error) {
+	startKey := ""
+	endKey := ""
+
+	resultsIterator, err := ctx.GetStub().GetStateByRange(startKey, endKey)
+
+	if err != nil {
+		return nil, err
+	}
+	defer resultsIterator.Close()
+
+	results := []QueryResult{}
+
+	for resultsIterator.HasNext() {
+		queryResponse, err := resultsIterator.Next()
+
+		if err != nil {
+			return nil, err
+		}
+
+		vaccine := new(Vaccine)
+		_ = json.Unmarshal(queryResponse.Value, vaccine)
+
+		queryResult := QueryResult{Key: queryResponse.Key, Record: vaccine}
+
+		if (vaccine.Owner == owner) {
+			results = append(results, queryResult)
+		}
+
+	}
+
+	return results, nil
+}
+
+
 
 func (s *DeviceContract) CreateDevice(ctx contractapi.TransactionContextInterface,deviceData []string) (string, error) {
 
-	if len(deviceData) != 7 {
+	if len(deviceData) != 8 {
 		return "", fmt.Errorf("Incorrect number of arguments. Expecting 7")
 	}
 
@@ -298,7 +367,7 @@ func (s *DeviceContract) CreateDevice(ctx contractapi.TransactionContextInterfac
 	present_temp, _ := strconv.ParseUint(deviceData[2],0,64)
 	total_lots, _ :=strconv.ParseUint(deviceData[6],0,64)
 
-	var device = Device{ID: deviceData[0],Min_temp: min_temp,Present_temp : present_temp,Max_temp : max_temp,Latitude:"",Longitude:"",Total_lots:total_lots}
+	var device = Device{ID: deviceData[0],Min_temp: min_temp,Present_temp : present_temp,Max_temp : max_temp,Latitude:"",Longitude:"",Total_lots:total_lots,Time:deviceData[7]}
 
 	deviceAsBytes, err := json.Marshal(device)
 	if err != nil {
@@ -340,7 +409,7 @@ func (s *DeviceContract) GetDeviceById(ctx contractapi.TransactionContextInterfa
 
 }
 
-func (s *DeviceContract) setTemp_location(ctx contractapi.TransactionContextInterface, deviceID string, present_temp uint64, latitude string, longitude string) (string, error) {
+func (s *DeviceContract) setTemp_location(ctx contractapi.TransactionContextInterface, deviceID string, present_temp string, latitude string, longitude string, dt string) (string, error) {
 
 	if len(deviceID) == 0 {
 		return "", fmt.Errorf("Please pass the correct device id")
@@ -359,9 +428,10 @@ func (s *DeviceContract) setTemp_location(ctx contractapi.TransactionContextInte
 	device := new(Device)
 	_ = json.Unmarshal(deviceAsBytes, device)
 
-	device.Present_temp = present_temp
+	device.Present_temp , _ = strconv.ParseUint(present_temp, 0, 64)
 	device.Latitude = latitude
 	device.Longitude = longitude
+	device.Time = dt
 
 	deviceAsBytes, err = json.Marshal(device)
 	if err != nil {
@@ -433,17 +503,18 @@ func (s *DeviceContract) GetHistoryForDeviceAsset(ctx contractapi.TransactionCon
 }
 
 
-func (s *RequirementContract) CreateRequirement(ctx contractapi.TransactionContextInterface,requirementData string) (string, error) {
+func (s *RequirementContract) CreateRequirement(ctx contractapi.TransactionContextInterface,requirementData []string) (string, error) {
 
-	if len(requirementData) == 0 {
+	if len(requirementData) != 4 {
 		return "", fmt.Errorf("Please pass the correct requirement data")
 	}
 
-	var requirement Requirement
-	err := json.Unmarshal([]byte(requirementData), &requirement)
-	if err != nil {
-		return "", fmt.Errorf("Failed while unmarshling requirement. %s", err.Error())
+	if (requirementData[1] == "Manufacturer" || requirementData[1] == "Iot") {
+		return "", fmt.Errorf("%s can't make requirements", requirementData[1])
 	}
+	count , _ := strconv.ParseUint(requirementData[3], 0, 64)
+
+	var requirement = Requirement{Username:requirementData[0],Orgname:requirementData[1],Level:requirementData[2],Count:count}
 
 	requirementAsBytes, err := json.Marshal(requirement)
 	if err != nil {
