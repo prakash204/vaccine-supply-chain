@@ -41,6 +41,9 @@ class Header extends Component {
 
         <div className="components">
           <a href="/dashboard">Dashboard</a>
+          <a href="/transfer-vaccine">Transfer Vaccine</a>
+          <a href="/add-vaccine">Add Vaccine</a>
+          <a href="/add-device">Add Device</a>
           <a href="/" onClick={this.logout}>logout</a>
         </div>
 

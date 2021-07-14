@@ -135,7 +135,7 @@ app.post('/register', async function (req, res) {
     logger.debug('-- returned from registering the username %s for organization %s', username, orgName);
     if (response && typeof response !== 'string') {
         logger.debug('Successfully registered the username %s for organization %s', username, orgName);
-        res.json(response);
+        res.json({ success: true, message: "User successfully registered"});
     } else {
         logger.debug('Failed to register the username %s for organization %s with::%s', username, orgName, response);
         res.json({ success: false, message: response });
@@ -241,7 +241,7 @@ app.get('/channels/:channelName/chaincodes/:chaincodeName', async function (req,
         var channelName = req.params.channelName;
         var chaincodeName = req.params.chaincodeName;
         console.log(`chaincode name is :${chaincodeName}`)
-        let args = req.query.args;
+        let args = req.username;
         let fcn = req.query.fcn;
         let peer = req.query.peer;
 
@@ -267,19 +267,19 @@ app.get('/channels/:channelName/chaincodes/:chaincodeName', async function (req,
             return;
         }
         console.log('args==========', args);
-        args = args.replace(/'/g, '"');
-        args = JSON.parse(args);
+        /*args = args.replace(/'/g, '"');
+        args = JSON.parse(args);*/
         logger.debug(args);
 
         let message = await query.query(channelName, chaincodeName, args, fcn, req.username, req.orgname);
 
         const response_payload = {
             result: message,
-            error: null,
+            error: "hello",
             errorData: null
         }
-
-        res.send(response_payload);
+        console.log(typeof JSON.stringify(response_payload));
+        res.send(JSON.stringify(response_payload));
 
     } catch (error) {
 

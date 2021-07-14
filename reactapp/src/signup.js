@@ -8,11 +8,27 @@ class Signup extends Component {
     super(props);
     this.state = {
       username : '',
-      orgname : '',
+      password : '',
       register : false,
       response : {},
     };
+    this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleChange = this.handleChange.bind(this);
   }
+
+  handleChange = (event) => {
+
+    switch (event.target.name) {
+      case 'username' : {
+        this.setState({username:event.target.value});
+        break;
+      }
+      case 'password' : {
+        this.setState({password:event.target.value});
+        break;
+      }
+    }
+  };
 
   handleSubmit = (event) => {
     event.preventDefault();
@@ -30,6 +46,10 @@ class Signup extends Component {
     .then((res) => this.setState({response : res.data}))
     .catch(err => console.log(err));
 
+
+    if (this.state.response.success === true) {
+      this.setState({register : true,username:'',password:''});
+    }
     console.log("response = "+this.state.response);
   };
 
@@ -38,10 +58,21 @@ class Signup extends Component {
     <React.Fragment>
     <Header />
     <div className="form">
+    {
+      this.state.register === true
+
+      ?
+
+      <span>You are successfully registered!!!</span>
+
+      :
+
+      ""
+    }
         <form onSubmit={(event) => this.handleSubmit(event)}>
           <label>
             Username:
-            <input type="text" name="username" />
+            <input type="text" name="username" value={this.state.username} onChange={this.handleChange}/>
           </label><br/>
           <label>
             Org. name :
@@ -55,7 +86,7 @@ class Signup extends Component {
           </label><br/>
           <label>
             Password:
-            <input type="password" name="password" />
+            <input type="password" name="password" value={this.state.password} onChange={this.handleChange}/>
           </label><br/>
           <button type="submit"> Signup </button>
         </form>

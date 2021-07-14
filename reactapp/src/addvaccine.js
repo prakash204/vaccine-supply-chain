@@ -1,5 +1,6 @@
 import {Component} from 'react';
 import axios from 'axios';
+import Header from './base/header';
 
 const token = localStorage.getItem('token');
 
@@ -54,6 +55,7 @@ class AddVaccine extends Component {
   render() {
     return (
       <div className="form">
+      <Header />
           <form onSubmit={(event) => this.handleSubmit(event)}>
 
             <label>

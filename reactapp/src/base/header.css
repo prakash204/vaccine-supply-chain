@@ -1,11 +1,13 @@
 .header {
-  background-color: #ffffff;
+  background-color: #55C0D0;
   position: fixed;
   z-index : 1;
   width: 100%;
   top:0;
   left:0;
   padding: 20px;
+  font-style: normal;
+  font-size: 20px;
 }
 
 .header > div {
@@ -16,10 +18,14 @@
 .brand {
   float:left;
 }
+
 .components {
   float: right;
 }
 
 a {
   margin-right : 15px;
+  color: #282c34;
+  font-style: normal;
+  text-decoration: none;
 }

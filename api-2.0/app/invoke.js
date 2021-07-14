@@ -59,8 +59,11 @@ const invokeTransaction = async ( channelName, chaincodeName, fcn, args, usernam
                 break;
             case "UpdateVaccineOwner":
                 console.log("=============")
-                result = await contract.submitTransaction('VaccineContract:'+fcn, args[0], args[1]);
-                result = {txid: result.toString()}
+                let result = {txid:[]}
+                for ( let i=1; i<args.length; i++ ) {
+                  res = await contract.submitTransaction('VaccineContract:'+fcn, args[i] ,args[0]);
+                  result.txid.push(res.toString());
+                }
                 break;
             case "setTemp_location":
                 console.log("=============")

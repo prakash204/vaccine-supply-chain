@@ -7,7 +7,9 @@ import Signup from './signup';
 import Login from './login';
 import Home from './home';
 import Dashboard from './dashboard';
-
+import AddDevice from './adddevice';
+import AddVaccine from './addvaccine';
+import TransferVaccine from './transfervaccine';
 
 class App extends Component {
 
@@ -41,6 +43,15 @@ class App extends Component {
       </Route>
       <Route exact path="/dashboard">
         <Dashboard/>
+      </Route>
+      <Route exact path="/transfer-vaccine">
+        <TransferVaccine />
+      </Route>
+      <Route exact path="/add-vaccine">
+        <AddVaccine />
+      </Route>
+      <Route exact path="/add-device">
+        <AddDevice />
       </Route>
     </Switch>
     </Router>

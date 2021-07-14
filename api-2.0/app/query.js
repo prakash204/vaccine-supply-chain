@@ -4,6 +4,7 @@ const path = require("path")
 const log4js = require('log4js');
 const logger = log4js.getLogger('BasicNetwork');
 const util = require('util')
+const sha256 = require('sha256');
 
 
 const helper = require('./helper')
@@ -22,7 +23,7 @@ const query = async (channelName, chaincodeName, args, fcn, username, org_name) 
         console.log(`Wallet path: ${walletPath}`);
 
         // Check to see if we've already enrolled the user.
-        let identity = await wallet.get(username);
+        let identity = await wallet.get(sha256(username+org_name));
         if (!identity) {
             console.log(`An identity for the user ${username} does not exist in the wallet, so registering user`);
             await helper.getRegisteredUser(username, org_name, true)
@@ -34,7 +35,7 @@ const query = async (channelName, chaincodeName, args, fcn, username, org_name) 
         // Create a new gateway for connecting to our peer node.
         const gateway = new Gateway();
         await gateway.connect(ccp, {
-            wallet, identity: username, discovery: { enabled: true, asLocalhost: true }
+            wallet, identity:sha256(username+org_name), discovery: { enabled: true, asLocalhost: true }
         });
 
         // Get the network (channel) our contract is deployed to.
@@ -70,6 +71,10 @@ const query = async (channelName, chaincodeName, args, fcn, username, org_name) 
                 console.log("=============")
                 result = await contract.evaluateTransaction('RequirementContract:'+fcn, args[0]);
                 break;
+
+            case "GetMyVaccine":
+                console.log("============")
+                result = await contract.evaluateTransaction('VaccineContract:'+fcn, args )
             default:
                 break;
         }
