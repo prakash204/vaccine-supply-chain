@@ -1,6 +1,6 @@
 import React , {Component} from 'react';
 import axios from 'axios';
-import './form.css';
+import './Form.css';
 import Header from './base/header';
 
 class Signup extends Component {
@@ -57,19 +57,19 @@ class Signup extends Component {
   return (
     <React.Fragment>
     <Header />
-    <div className="form">
-    {
-      this.state.register === true
+    <div className="form-login">
+      {
+        this.state.register === true
 
-      ?
+        ?
 
-      <span>You are successfully registered!!!</span>
+        <span>You are successfully signed up!!!</span>
 
-      :
+        :
 
-      ""
-    }
-        <form onSubmit={(event) => this.handleSubmit(event)}>
+        ""
+      }
+        <form className="login" onSubmit={(event) => this.handleSubmit(event)}>
           <label>
             Username:
             <input type="text" name="username" value={this.state.username} onChange={this.handleChange}/>
@@ -88,7 +88,7 @@ class Signup extends Component {
             Password:
             <input type="password" name="password" value={this.state.password} onChange={this.handleChange}/>
           </label><br/>
-          <button type="submit"> Signup </button>
+          <button className="submit-button" type="submit"> Signup </button>
         </form>
     </div>
     </React.Fragment>

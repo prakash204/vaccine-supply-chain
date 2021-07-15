@@ -25,7 +25,15 @@
 
 a {
   margin-right : 15px;
-  color: #282c34;
-  font-style: normal;
+  color: white;
+  border: 0px solid none;
+  border-radius: 10px;
+  padding: 5px 8px 5px 7px;
+  font-style: bold;
   text-decoration: none;
+}
+
+a:hover {
+  background-color: #282c34;
+  padding: 8px;
 }

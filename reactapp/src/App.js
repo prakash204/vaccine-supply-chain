@@ -47,12 +47,19 @@ class App extends Component {
       <Route exact path="/transfer-vaccine">
         <TransferVaccine />
       </Route>
-      <Route exact path="/add-vaccine">
-        <AddVaccine />
-      </Route>
-      <Route exact path="/add-device">
-        <AddDevice />
-      </Route>
+      { this.state.orgname === 'Manufacturer'
+        ?
+          <>
+            <Route exact path="/add-vaccine">
+              <AddVaccine />
+            </Route>
+            <Route exact path="/add-device">
+              <AddDevice />
+            </Route>
+          </>
+        :
+        ""
+      }
     </Switch>
     </Router>
     </div>

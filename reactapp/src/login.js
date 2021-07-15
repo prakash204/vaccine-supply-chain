@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import { Redirect } from 'react-router-dom';
 import axios from 'axios';
-import './form.css';
+import './Form.css';
 import Header from './base/header';
 
 
@@ -76,9 +76,9 @@ class Login extends Component {
   return (
     <React.Fragment>
       <Header />
-      <div className="form">
+      <div className="form-login">
       { this.state.success === false ? <span>User credentials incorrect</span> : ''}
-          <form action="/home" onSubmit={(event) => this.handleSubmit(event)}>
+          <form className="login" action="/home" onSubmit={(event) => this.handleSubmit(event)}>
 
             <label>
               Username:
@@ -101,7 +101,7 @@ class Login extends Component {
               <input type="password" name="password" />
             </label><br/>
 
-            <button type="submit"> Login </button>
+            <button className="submit-button" type="submit"> Login </button>
           </form>
       </div>
     </React.Fragment>

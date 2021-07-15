@@ -1,4 +1,4 @@
-.form {
+.form-transfer {
   background-color: #282c34;
   min-height: 100vh;
   display: flex;
@@ -17,7 +17,7 @@
   border-radius: 8px;
 }
 
-input[type=text] {
+.form-transfer input[type=text] {
   float : right;
   width: 200px;
   height: 50px;

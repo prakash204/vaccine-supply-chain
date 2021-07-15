@@ -54,9 +54,9 @@ class AddVaccine extends Component {
 
   render() {
     return (
-      <div className="form">
+      <div className="form-login">
       <Header />
-          <form onSubmit={(event) => this.handleSubmit(event)}>
+          <form className="login" onSubmit={(event) => this.handleSubmit(event)}>
 
             <label>
               VaccineID:
@@ -75,7 +75,7 @@ class AddVaccine extends Component {
               <input type="text" name="count" />
             </label><br/>
 
-            <button type="submit">ADD</button>
+            <button className="submit-button" type="submit">ADD</button>
           </form>
       </div>
     );

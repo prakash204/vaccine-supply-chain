@@ -1,4 +1,4 @@
-import {Component} from 'react';
+import React, {Component} from 'react';
 import axios from 'axios';
 import Table from 'react-bootstrap/Table';
 import Header from './base/header';
@@ -9,7 +9,8 @@ class TransferVaccine extends Component {
   constructor(props) {
     super(props);
     this.state= {
-      myvaccines: []
+      myvaccines: [],
+      response: null
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -21,11 +22,10 @@ class TransferVaccine extends Component {
     const apiurl = 'http://localhost:4000/channels/mychannel/chaincodes/vacsup_cc?fcn=GetMyVaccine';
     axios.get(apiurl,{ headers: { 'Authorization': `Bearer ${token}`}})
       .then(res => {
-        this.setState({myvaccines : res.data.result});
+        this.setState({myvaccines : res.data.result,response:null});
         console.log(res.data.result);
       })
       .catch(err => console.log(err));
-
   }
 
   componentWillMount() {
@@ -76,7 +76,10 @@ class TransferVaccine extends Component {
     };
 
     axios.post(apiurl , data, {headers : {'Authorization':`Bearer ${token}`, 'Content-Type':'application/json'}})
-      .then(res => console.log(res))
+      .then(res => {
+        console.log(res);
+        this.setState({response:res})
+      })
       .catch(err => console.log(err));
 
 
@@ -84,8 +87,10 @@ class TransferVaccine extends Component {
 
   render() {
     return (
-      <div className="form">
+      <React.Fragment>
       <Header />
+      <div className="form-transfer">
+      <span>{this.state.response}</span>
       <form className="transfer" onSubmit={event => this.handleSubmit(event)}>
         <label>
           To :
@@ -109,6 +114,7 @@ class TransferVaccine extends Component {
       </form>
 
       </div>
+      </React.Fragment>
     )
   };
 }

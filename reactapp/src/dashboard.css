@@ -16,3 +16,16 @@
   font-size: 20px;
   color: black;
 }
+
+.content table {
+  padding: 5px;
+  width: 100%;
+}
+
+.content td, th {
+  padding: 5px;
+}
+
+.content tr:nth-child(even) {
+  background-color:Lightgreen;
+}
