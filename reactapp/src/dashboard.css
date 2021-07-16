@@ -29,3 +29,48 @@
 .content tr:nth-child(even) {
   background-color:Lightgreen;
 }
+
+.content a{
+  color: black;
+  text-decoration: underline;
+}
+
+.content a:hover{
+  color: black;
+  text-decoration: underline;
+}
+
+.update {
+  background-color: white;
+  color: black;
+  padding: 20px;
+  border-radius: 5px;
+  /*align-items: left;*/
+}
+
+.update input[type=text] {
+  width :200px;
+  height: 40px;
+  border-color: black;
+  margin-left: 10px;
+  border-radius: 10px;
+}
+
+label {
+  padding:10px;
+  display: inline-block;
+}
+
+.submit-button {
+  padding: 6px 20px 6px 20px;
+  font-style: italic;
+  background-color: #282c34;
+  color : white;
+  font-size: 20px;
+  border-radius: 10px;
+}
+
+.submit-button:hover {
+  background-color :white;
+  color: #282c34;
+}

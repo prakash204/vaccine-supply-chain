@@ -4,13 +4,15 @@ import Table from 'react-bootstrap/Table';
 import Header from './base/header';
 import './transfer.css';
 
+import Data from './jsondata/states.json';
+
 class TransferVaccine extends Component {
 
   constructor(props) {
     super(props);
     this.state= {
       myvaccines: [],
-      response: null
+      response: [],
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -34,6 +36,7 @@ class TransferVaccine extends Component {
 
   renderMyVaccines = () => {
       const MyVaccines = this.state.myvaccines;
+      if (MyVaccines === null) return null;
       return MyVaccines.map((item) => (
         <tr>
           <td>{item.Record.id}</td>
@@ -44,6 +47,56 @@ class TransferVaccine extends Component {
         </tr>
       ))
   };
+
+  InputsForState = () => {
+
+    const States = Data.states;
+    return States.map((item) => (
+      <option value={item.name}>{item.name}</option>
+    ))
+
+  }
+
+  InputsForDistricPhc = () => {
+
+    const States = Data.states;
+    let flag = false;
+    for (const item of States) {
+      if (item.name === localStorage.getItem('username')) {
+        const District = item.districts;
+        return District.map((district) => (
+          <option value={district.name}>{district.name}</option>
+        ))
+      } else {
+        const District = item.districts;
+        for (const district of District) {
+          if (localStorage.getItem('username') === district.name) {
+            const Phcs = district.phcs;
+            return Phcs.map((phc) => (
+              <option value={phc}>{phc}</option>
+            ))
+          }
+        }
+      }
+    }
+
+  }
+
+  getInputOptionsForTransfer = () => {
+    if (localStorage.getItem('orgName') === 'Manufacturer') {
+      return (
+        <select type="select" name="to" >
+            {this.InputsForState()}
+        </select>
+      )
+    } else if (localStorage.getItem('orgName') === 'Distribution') {
+      return (
+        <select type="select" name="to" >
+            {this.InputsForDistricPhc()}
+        </select>
+      )
+    }
+  }
 
   handleChange(event) {
     const name = event.target.name;
@@ -94,9 +147,9 @@ class TransferVaccine extends Component {
       <form className="transfer" onSubmit={event => this.handleSubmit(event)}>
         <label>
           To :
-          <input type="text" name="to" />
+          {this.getInputOptionsForTransfer()}
         </label>
-        <button type="submit">Submit</button>
+        <button className="submit-transfer" type="submit">Submit</button>
         <Table>
           <thead>
             <tr>

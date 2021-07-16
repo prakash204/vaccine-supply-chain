@@ -54,10 +54,20 @@ type Requirement struct {
 	Count uint64 `json:"count"`
 }
 
-type QueryResult struct {
+type VaccineQueryResult struct {
 	Key    string `json:"Key"`
 	Record *Vaccine
 }
+type DeviceQueryResult struct {
+	Key    string `json:"Key"`
+	Record *Device
+}
+
+type RequirementQueryResult struct {
+	Key    string `json:"Key"`
+	Record *Requirement
+}
+
 
 func (s *VaccineContract) CreateVaccine(ctx contractapi.TransactionContextInterface,vaccineData []string) (string, error) {
 
@@ -252,7 +262,7 @@ func (s *VaccineContract) DeleteVaccineById(ctx contractapi.TransactionContextIn
 
 func (s *VaccineContract) GetContractsForQuery(ctx contractapi.TransactionContextInterface, queryString string) ([]Vaccine, error) {
 
-	queryResults, err := s.getQueryResultForQueryString(ctx, queryString)
+	queryResults, err := s.GetQueryResultForQueryString(ctx, queryString)
 
 	if err != nil {
 		return nil, fmt.Errorf("Failed to read from ----world state. %s", err.Error())
@@ -262,7 +272,7 @@ func (s *VaccineContract) GetContractsForQuery(ctx contractapi.TransactionContex
 
 }
 
-func (s *VaccineContract) getQueryResultForQueryString(ctx contractapi.TransactionContextInterface, queryString string) ([]Vaccine, error) {
+func (s *VaccineContract) GetQueryResultForQueryString(ctx contractapi.TransactionContextInterface, queryString string) ([]Vaccine, error) {
 
 	resultsIterator, err := ctx.GetStub().GetQueryResult(queryString)
 	if err != nil {
@@ -290,7 +300,7 @@ func (s *VaccineContract) getQueryResultForQueryString(ctx contractapi.Transacti
 	return results, nil
 }
 
-func (s *VaccineContract) GetAllVaccines(ctx contractapi.TransactionContextInterface) ([]QueryResult, error) {
+func (s *VaccineContract) GetAllVaccines(ctx contractapi.TransactionContextInterface) ([]VaccineQueryResult, error) {
 	startKey := ""
 	endKey := ""
 
@@ -301,7 +311,7 @@ func (s *VaccineContract) GetAllVaccines(ctx contractapi.TransactionContextInter
 	}
 	defer resultsIterator.Close()
 
-	results := []QueryResult{}
+	results := []VaccineQueryResult{}
 
 	for resultsIterator.HasNext() {
 		queryResponse, err := resultsIterator.Next()
@@ -313,14 +323,17 @@ func (s *VaccineContract) GetAllVaccines(ctx contractapi.TransactionContextInter
 		vaccine := new(Vaccine)
 		_ = json.Unmarshal(queryResponse.Value, vaccine)
 
-		queryResult := QueryResult{Key: queryResponse.Key, Record: vaccine}
-		results = append(results, queryResult)
+		queryResult := VaccineQueryResult{Key: queryResponse.Key, Record: vaccine}
+		if (vaccine.Owner != "") {
+			results = append(results, queryResult)
+		}
+
 	}
 
 	return results, nil
 }
 
-func (s *VaccineContract) GetMyVaccine(ctx contractapi.TransactionContextInterface, owner string) ([]QueryResult, error) {
+func (s *VaccineContract) GetMyVaccine(ctx contractapi.TransactionContextInterface, owner string) ([]VaccineQueryResult, error) {
 	startKey := ""
 	endKey := ""
 
@@ -331,7 +344,7 @@ func (s *VaccineContract) GetMyVaccine(ctx contractapi.TransactionContextInterfa
 	}
 	defer resultsIterator.Close()
 
-	results := []QueryResult{}
+	results := []VaccineQueryResult{}
 
 	for resultsIterator.HasNext() {
 		queryResponse, err := resultsIterator.Next()
@@ -343,7 +356,7 @@ func (s *VaccineContract) GetMyVaccine(ctx contractapi.TransactionContextInterfa
 		vaccine := new(Vaccine)
 		_ = json.Unmarshal(queryResponse.Value, vaccine)
 
-		queryResult := QueryResult{Key: queryResponse.Key, Record: vaccine}
+		queryResult := VaccineQueryResult{Key: queryResponse.Key, Record: vaccine}
 
 		if (vaccine.Owner == owner) {
 			results = append(results, queryResult)
@@ -409,7 +422,7 @@ func (s *DeviceContract) GetDeviceById(ctx contractapi.TransactionContextInterfa
 
 }
 
-func (s *DeviceContract) setTemp_location(ctx contractapi.TransactionContextInterface, deviceID string, present_temp string, latitude string, longitude string, dt string) (string, error) {
+func (s *DeviceContract) SetTemplocation(ctx contractapi.TransactionContextInterface, deviceID string, present_temp string, latitude string, longitude string, dt string) (string, error) {
 
 	if len(deviceID) == 0 {
 		return "", fmt.Errorf("Please pass the correct device id")
@@ -442,6 +455,38 @@ func (s *DeviceContract) setTemp_location(ctx contractapi.TransactionContextInte
 
 	return ctx.GetStub().GetTxID(), ctx.GetStub().PutState(device.ID, deviceAsBytes)
 
+}
+
+func (s *DeviceContract) GetAllDevices(ctx contractapi.TransactionContextInterface) ([]DeviceQueryResult, error) {
+	startKey := ""
+	endKey := ""
+
+	resultsIterator, err := ctx.GetStub().GetStateByRange(startKey, endKey)
+
+	if err != nil {
+		return nil, err
+	}
+	defer resultsIterator.Close()
+
+	results := []DeviceQueryResult{}
+
+	for resultsIterator.HasNext() {
+		queryResponse, err := resultsIterator.Next()
+
+		if err != nil {
+			return nil, err
+		}
+
+		device := new(Device)
+		_ = json.Unmarshal(queryResponse.Value, device)
+
+		queryResult := DeviceQueryResult{Key: queryResponse.Key, Record: device}
+		if (device.Min_temp != 0) {
+			results = append(results, queryResult)
+		}
+	}
+
+	return results, nil
 }
 
 func (s *DeviceContract) DeleteDeviceById(ctx contractapi.TransactionContextInterface, deviceID string) (string, error) {
@@ -554,6 +599,38 @@ func (s *RequirementContract) GetRequirementByUsername(ctx contractapi.Transacti
 
 	return requirement, nil
 
+}
+
+func (s *RequirementContract) GetAllRequirements(ctx contractapi.TransactionContextInterface) ([]RequirementQueryResult, error) {
+	startKey := ""
+	endKey := ""
+
+	resultsIterator, err := ctx.GetStub().GetStateByRange(startKey, endKey)
+
+	if err != nil {
+		return nil, err
+	}
+	defer resultsIterator.Close()
+
+	results := []RequirementQueryResult{}
+
+	for resultsIterator.HasNext() {
+		queryResponse, err := resultsIterator.Next()
+
+		if err != nil {
+			return nil, err
+		}
+
+		requirement := new(Requirement)
+		_ = json.Unmarshal(queryResponse.Value, requirement)
+
+		queryResult := RequirementQueryResult{Key: queryResponse.Key, Record: requirement}
+		if (requirement.Username != "") {
+			results = append(results, queryResult)
+		}
+	}
+
+	return results, nil
 }
 
 func (s *RequirementContract) DeleteRequirementByUsername(ctx contractapi.TransactionContextInterface, requirementUsername string) (string, error) {

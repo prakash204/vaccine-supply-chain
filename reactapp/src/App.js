@@ -10,20 +10,22 @@ import Dashboard from './dashboard';
 import AddDevice from './adddevice';
 import AddVaccine from './addvaccine';
 import TransferVaccine from './transfervaccine';
+import UpdateDevice from './updatedevice';
 
 class App extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
-      loggedIn : false
+      loggedIn : false,
+      orgname: ''
     }
   }
 
   componentDidMount(){
     const a = localStorage.getItem('token');
     if (a !== null) {
-      this.setState({loggedIn : true})
+      this.setState({loggedIn : true, orgname: localStorage.getItem('orgName')})
     }
   }
 
@@ -60,6 +62,7 @@ class App extends Component {
         :
         ""
       }
+      <Route path="/update_temp_location/:id/" component={UpdateDevice}/>
     </Switch>
     </Router>
     </div>

@@ -65,9 +65,10 @@ const invokeTransaction = async ( channelName, chaincodeName, fcn, args, usernam
                   result.txid.push(res.toString());
                 }
                 break;
-            case "setTemp_location":
-                console.log("=============")
-                result = await contract.submitTransaction('DeviceContract:'+fcn, args[0], args[1], args[2], args[3] );
+            case "SetTemplocation":
+                console.log("=============");
+                console.log("hellooo"+args+" "+fcn);
+                result = await contract.submitTransaction('DeviceContract:'+fcn, args[0], args[1], args[2], args[3], args[4] );
                 result = {txid: result.toString()}
                 break;
             default:

@@ -1,5 +1,5 @@
 .header {
-  background-color: #55C0D0;
+  background-color: #1AC092;
   position: fixed;
   z-index : 1;
   width: 100%;
@@ -23,7 +23,7 @@
   float: right;
 }
 
-a {
+.header a {
   margin-right : 15px;
   color: white;
   border: 0px solid none;
@@ -33,7 +33,7 @@ a {
   text-decoration: none;
 }
 
-a:hover {
+.header a:hover {
   background-color: #282c34;
   padding: 8px;
 }

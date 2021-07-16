@@ -3,10 +3,12 @@ import Header from './base/header';
 import './dashboard.css';
 import axios from 'axios';
 import States from './jsondata/states.json';
+import GetDevices from './getdevices';
 
 
 const token = localStorage.getItem('token');
 const apiurl = 'http://localhost:4000/channels/mychannel/chaincodes/vacsup_cc?fcn=GetMyVaccine';
+const apiurl_get = 'http://localhost:4000/channels/mychannel/chaincodes/vacsup_cc?fcn=GetAllDevices';
 var QRCode = require('qrcode.react');
 const sha256 = require('sha256');
 
@@ -33,14 +35,15 @@ class Dashboard extends Component {
   };
 
   componentDidMount() {
-    axios.get(apiurl, { headers : { 'Authorization':`Bearer ${token}`,'Content-Type':'application/json'}})
-    .then(res => {
-      this.setState({ myvaccines :res.data.result});
-      console.log(res.data.result);
-    })
-    .catch(err => console.log(err));
-    //console.log(this.state.myvaccines);
     this.setState({username:localStorage.getItem('username'), orgname : localStorage.getItem('orgName')});
+
+    axios.get(apiurl, { headers : { 'Authorization':`Bearer ${token}`,'Content-Type':'application/json'}})
+      .then(res => {
+        this.setState({ myvaccines :res.data.result});
+        console.log(res.data.result);
+      })
+      .catch(err => console.log(err));
+    //console.log(this.state.myvaccines);
   }
 
   addVaccine = () => {
@@ -55,13 +58,14 @@ class Dashboard extends Component {
 
   renderMyVaccines = () => {
     const MyVaccines = this.state.myvaccines;
+    if (MyVaccines === null) return null;
     return MyVaccines.map((item) => (
       <tr>
         <td>{item.Record.id}</td>
         <td>{item.Record.name}</td>
         <td>{item.Record.manufacturer}</td>
         <td>{item.Record.owner}</td>
-        <td>{item.Record.t_dev_id}</td>
+        <td><a href={`/update_temp_location/${item.Record.t_dev_id}/`}>{item.Record.t_dev_id}</a></td>
         <td>{item.Record.count}</td>
       </tr>
     ))
@@ -111,7 +115,7 @@ class Dashboard extends Component {
     return (
       <>
         <h2>Register for vaccine here!!!</h2><p>***provide the same password as provided while logging in to the website</p>
-        <form onSubmit={(event) => this.handleSubmit(event)}>
+        <form className="update" onSubmit={(event) => this.handleSubmit(event)}>
 
           <label>
             State:
@@ -156,6 +160,50 @@ class Dashboard extends Component {
     document.body.removeChild(downloadLink);
   }
 
+  chooseForMyVaccines = () => {
+    const myorgs = ["Manufacturer","Distribution","Med"];
+    if (myorgs.includes(this.state.orgname)) {
+
+      return (
+        <>
+          <h1>Myvaccines</h1>
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Manufacturer</th>
+                <th>Owner</th>
+                <th>IOT device</th>
+                <th>Count</th>
+              </tr>
+            </thead>
+            <tbody>
+              {this.renderMyVaccines()}
+            </tbody>
+          </table>
+        </>
+      )
+
+    } else  if (this.state.orgname === 'Beneficiary') {
+
+      if (this.state.registered) {
+
+        return <><h2>You are already registered!!!</h2><QRCode id="qrcode" value={this.state.qrvalue} /><a href="#" onClick={this.downloadQR}>download</a></>
+
+      } else {
+
+        return <>{this.registerForVaccine()}</>
+
+      }
+
+    } else if (this.state.orgname === 'Iot') {
+
+      return <GetDevices />
+
+    }
+  }
+
   handleChange(event) {
     switch (event.target.name) {
       case 'state_t': {
@@ -196,38 +244,7 @@ class Dashboard extends Component {
       <div className="dashboard">
         <Header />
         <div className="content">
-        { this.state.orgname === ("Manufacturer" || "Distribution" || "Med" )
-          ?
-          <>
-          <h1>Myvaccines</h1>
-          <table>
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Manufacturer</th>
-                <th>Owner</th>
-                <th>IOT device</th>
-                <th>Count</th>
-              </tr>
-            </thead>
-            <tbody>
-              {this.renderMyVaccines()}
-            </tbody>
-          </table>
-          </>
-          :
-          <>
-          { this.state.orgname === "Beneficiary"
-              ?
-              <>
-              { this.state.registered ? <><h2>You are already registered!!!</h2><QRCode id="qrcode" value={this.state.qrvalue} /><a href="#" onClick={this.downloadQR}>download</a></>  : <>{this.registerForVaccine()}</>}
-              </>
-              :
-              ""
-          }
-          </>
-        }
+    {this.chooseForMyVaccines()}
         </div>
       </div>
     );

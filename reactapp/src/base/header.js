@@ -15,12 +15,30 @@ class Header extends Component {
 
   componentDidMount() {
     if (localStorage.getItem('token') !== null) {
-      this.setState({loggedIn : true,username: localStorage.getItem('username'),orgname: localStorage.getItem('orgname')});
+      this.setState({loggedIn : true,username: localStorage.getItem('username'),orgname: localStorage.getItem('orgName')});
     } else {
       this.setState({loggedIn : false});
     }
+    console.log(localStorage.getItem('orgname'));
   }
 
+  chooseForTransfer(){
+    if (this.state.orgname !== 'Beneficiary' && this.state.orgname !== 'Iot') {
+      return <a href="/transfer-vaccine">Transfer Vaccine</a>
+    }
+    else return null;
+  }
+
+  chooseForAdd(){
+    if (this.state.orgname === 'Manufacturer') {
+      return (
+        <>
+        <a href="/add-vaccine">Add Vaccine</a>
+        <a href="/add-device">Add Device</a>
+        </>
+      )
+    }
+  }
 
   logout = () => {
     localStorage.removeItem('token');
@@ -42,21 +60,8 @@ class Header extends Component {
 
         <div className="components">
           <a href="/dashboard">Dashboard</a>
-          { this.state.orgname !== 'Beneficiary'
-            ?
-            <a href="/transfer-vaccine">Transfer Vaccine</a>
-            :
-            ""
-          }
-          { this.state.orgname === 'Manufacturer'
-            ?
-            <>
-            <a href="/add-vaccine">Add Vaccine</a>
-            <a href="/add-device">Add Device</a>
-            </>
-            :
-            ""
-          }
+          {this.chooseForTransfer()}
+          {this.chooseForAdd()}
           <a href="/" onClick={this.logout}>logout</a>
         </div>
 

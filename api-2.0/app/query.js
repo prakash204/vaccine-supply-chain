@@ -46,6 +46,11 @@ const query = async (channelName, chaincodeName, args, fcn, username, org_name) 
         let result;
 
         switch (fcn) {
+            case "GetAllDevices":
+                console.log("============");
+                console.log(args);
+                result = await contract.evaluateTransaction('DeviceContract:'+fcn);
+                break;
             case "GetHistoryForVaccineAsset":
                 console.log("=============")
                 result = await contract.evaluateTransaction('VaccineContract:'+fcn, args[0]);
@@ -56,16 +61,16 @@ const query = async (channelName, chaincodeName, args, fcn, username, org_name) 
                 break;
             case "GetHistoryForDeviceAsset":
                 console.log("=============")
-                result = await contract.evaluateTransaction('DeviceContract:'+fcn, args[0]);
+                result = await contract.evaluateTransaction('DeviceContract:'+fcn, args);
                 break;
 
-            case "GetVacccineById":
+            case "GetVaccineById":
                 console.log("=============")
                 result = await contract.evaluateTransaction('VaccineContract:'+fcn, args[0]);
                 break;
             case "GetDeviceById":
                 console.log("=============")
-                result = await contract.evaluateTransaction('DeviceContract:'+fcn, args[0]);
+                result = await contract.evaluateTransaction('DeviceContract:'+fcn, String(args));
                 break;
             case "GetRequirementByUsername":
                 console.log("=============")
@@ -73,14 +78,15 @@ const query = async (channelName, chaincodeName, args, fcn, username, org_name) 
                 break;
 
             case "GetMyVaccine":
-                console.log("============")
-                result = await contract.evaluateTransaction('VaccineContract:'+fcn, args )
+                console.log("============"+args)
+                result = await contract.evaluateTransaction('VaccineContract:'+fcn, args );
+                break;
             default:
                 break;
         }
 
         console.log(result)
-        console.log(`Transaction has been evaluated, result is: ${result.toString()}`);
+        console.log(`Transaction has been evaluated,${fcn}, result is: ${result.toString()}`);
 
         result = JSON.parse(result.toString());
         return result

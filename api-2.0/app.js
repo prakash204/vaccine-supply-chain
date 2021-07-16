@@ -207,8 +207,21 @@ app.get('/channels/:channelName/chaincodes/:chaincodeName', async function (req,
         var channelName = req.params.channelName;
         var chaincodeName = req.params.chaincodeName;
         console.log(`chaincode name is :${chaincodeName}`)
-        let args = req.username;
         let fcn = req.query.fcn;
+        let args;
+        switch(fcn) {
+          case 'GetMyVaccine':
+            args = req.username;
+            break;
+          case 'GetAllDevices':
+            args = req.username;
+            break;
+          default:
+            args = req.query.args;
+            break;
+        }
+
+        console.log(args);
         let peer = req.query.peer;
 
         logger.debug('channelName : ' + channelName);
@@ -241,14 +254,14 @@ app.get('/channels/:channelName/chaincodes/:chaincodeName', async function (req,
 
         const response_payload = {
             result: message,
-            error: error,
+            error: null,
             errorData: null
         }
         console.log(typeof JSON.stringify(response_payload));
         res.send(JSON.stringify(response_payload));
 
     } catch (error) {
-
+        console.log(error);
         const response_payload = {
             result: null,
             error: error.name,
