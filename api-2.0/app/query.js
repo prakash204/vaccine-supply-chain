@@ -74,12 +74,20 @@ const query = async (channelName, chaincodeName, args, fcn, username, org_name) 
                 break;
             case "GetRequirementByUsername":
                 console.log("=============")
-                result = await contract.evaluateTransaction('RequirementContract:'+fcn, args[0]);
+                result = await contract.evaluateTransaction('RequirementContract:'+fcn, args);
                 break;
 
             case "GetMyVaccine":
                 console.log("============"+args)
                 result = await contract.evaluateTransaction('VaccineContract:'+fcn, args );
+                break;
+            case "GetAllRequirements":
+                console.log("============"+args)
+                result = await contract.evaluateTransaction('RequirementContract:'+fcn);
+                break;
+            case "GetAreaRequirements":
+                console.log("============"+args)
+                result = await contract.evaluateTransaction('RequirementContract:'+fcn,args);
                 break;
             default:
                 break;

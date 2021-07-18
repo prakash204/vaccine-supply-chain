@@ -23,6 +23,10 @@ type RequirementContract struct {
 	contractapi.Contract
 }
 
+type FeedbackContract struct {
+	contractapi.Contract
+}
+
 
 var logger = flogging.MustGetLogger("vacsup_cc")
 
@@ -51,13 +55,24 @@ type Requirement struct {
 	Username string `json:"username"`
 	Orgname string `json:"orgname"`
 	Level string `json:"level"`
-	Count uint64 `json:"count"`
+	State string `json:"state"`
+	District string `json:"district"`
+	Phc string `json:"phc"`
+	Vaccinated bool `json:"vaccinated"`
+	VaccineID string `json:"vaccineId"`
+}
+
+type Feedback struct {
+	Username string `json:"username"`
+	VaccineID string `json:"vaccineId"`
+	Message string `json:"message"`
 }
 
 type VaccineQueryResult struct {
 	Key    string `json:"Key"`
 	Record *Vaccine
 }
+
 type DeviceQueryResult struct {
 	Key    string `json:"Key"`
 	Record *Device
@@ -68,6 +83,10 @@ type RequirementQueryResult struct {
 	Record *Requirement
 }
 
+type FeedbackQueryResult struct {
+	Key    string `json:"Key"`
+	Record *Feedback
+}
 
 func (s *VaccineContract) CreateVaccine(ctx contractapi.TransactionContextInterface,vaccineData []string) (string, error) {
 
@@ -83,6 +102,17 @@ func (s *VaccineContract) CreateVaccine(ctx contractapi.TransactionContextInterf
 	if err != nil {
 		return "", fmt.Errorf("Failed while marshling vaccine. %s", err.Error())
 	}
+
+	params := []string{"DeviceContract:UpdateDeviceLots", vaccineData[5], "true"}
+	queryArgs := make([][]byte, len(params))
+	for i, arg := range params {
+		queryArgs[i] = []byte(arg)
+	}
+
+	ctx.GetStub().InvokeChaincode("DeviceContract", queryArgs, "mychannel")
+	/*if (response.Status !=  "OK") {
+		return "", fmt.Errorf("Failed to query chaincode. Got error: %s", response.Payload)
+	}*/
 
 	/*if len(vaccine.Temp_device_id) == 0 {
 		return "", fmt.Errorf("Please pass the correct device id")
@@ -126,6 +156,38 @@ func (s *VaccineContract) UpdateVaccineOwner(ctx contractapi.TransactionContextI
 	_ = json.Unmarshal(vaccineAsBytes, vaccine)
 
 	vaccine.Owner = newOwner
+
+	vaccineAsBytes, err = json.Marshal(vaccine)
+	if err != nil {
+		return "", fmt.Errorf("Failed while marshling vaccine. %s", err.Error())
+	}
+
+	//  txId := ctx.GetStub().GetTxID()
+
+	return ctx.GetStub().GetTxID(), ctx.GetStub().PutState(vaccine.ID, vaccineAsBytes)
+
+}
+
+func (s *VaccineContract) UpdateVaccineCount(ctx contractapi.TransactionContextInterface, vaccineID string) (string, error) {
+
+	if len(vaccineID) == 0 {
+		return "", fmt.Errorf("Please pass the correct vaccine id")
+	}
+
+	vaccineAsBytes, err := ctx.GetStub().GetState(vaccineID)
+
+	if err != nil {
+		return "", fmt.Errorf("Failed to get vaccine data. %s", err.Error())
+	}
+
+	if vaccineAsBytes == nil {
+		return "", fmt.Errorf("%s does not exist", vaccineID)
+	}
+
+	vaccine := new(Vaccine)
+	_ = json.Unmarshal(vaccineAsBytes, vaccine)
+
+	vaccine.Count = vaccine.Count -1
 
 	vaccineAsBytes, err = json.Marshal(vaccine)
 	if err != nil {
@@ -256,6 +318,30 @@ func (s *VaccineContract) DeleteVaccineById(ctx contractapi.TransactionContextIn
 	if len(vaccineID) == 0 {
 		return "", fmt.Errorf("Please provide correct contract Id")
 	}
+
+	vaccineAsBytes, err := ctx.GetStub().GetState(vaccineID)
+
+	if err != nil {
+		return "", fmt.Errorf("Failed to read from world state. %s", err.Error())
+	}
+
+	if vaccineAsBytes == nil {
+		return "", fmt.Errorf("%s does not exist", vaccineID)
+	}
+
+	vaccine := new(Vaccine)
+	_ = json.Unmarshal(vaccineAsBytes, vaccine)
+
+	params := []string{"DeviceContract:UpdateDeviceLots", vaccine.Temp_device_id, "false"}
+	queryArgs := make([][]byte, len(params))
+	for i, arg := range params {
+		queryArgs[i] = []byte(arg)
+	}
+
+	ctx.GetStub().InvokeChaincode("DeviceContract", queryArgs, "mychannel")
+	/*if response.Status !=  "OK" {
+		return "", fmt.Errorf("Failed to query chaincode. Got error: %s", response.Payload)
+	}*/
 
 	return ctx.GetStub().GetTxID(), ctx.GetStub().DelState(vaccineID)
 }
@@ -457,6 +543,42 @@ func (s *DeviceContract) SetTemplocation(ctx contractapi.TransactionContextInter
 
 }
 
+func (s *DeviceContract) UpdateDeviceLots(ctx contractapi.TransactionContextInterface, deviceID string, increase string) (string, error) {
+
+	if len(deviceID) == 0 {
+		return "", fmt.Errorf("Please pass the correct device id")
+	}
+
+	deviceAsBytes, err := ctx.GetStub().GetState(deviceID)
+
+	if err != nil {
+		return "", fmt.Errorf("Failed to get device data. %s", err.Error())
+	}
+
+	if deviceAsBytes == nil {
+		return "", fmt.Errorf("%s does not exist", deviceID)
+	}
+
+	device := new(Device)
+	_ = json.Unmarshal(deviceAsBytes, device)
+
+	if (increase == "true") {
+		device.Total_lots = device.Total_lots + 1
+	} else {
+		device.Total_lots = device.Total_lots -1
+	}
+
+	deviceAsBytes, err = json.Marshal(device)
+	if err != nil {
+		return "", fmt.Errorf("Failed while marshling device. %s", err.Error())
+	}
+
+	//  txId := ctx.GetStub().GetTxID()
+
+	return ctx.GetStub().GetTxID(), ctx.GetStub().PutState(device.ID, deviceAsBytes)
+
+}
+
 func (s *DeviceContract) GetAllDevices(ctx contractapi.TransactionContextInterface) ([]DeviceQueryResult, error) {
 	startKey := ""
 	endKey := ""
@@ -550,16 +672,16 @@ func (s *DeviceContract) GetHistoryForDeviceAsset(ctx contractapi.TransactionCon
 
 func (s *RequirementContract) CreateRequirement(ctx contractapi.TransactionContextInterface,requirementData []string) (string, error) {
 
-	if len(requirementData) != 4 {
+	if len(requirementData) != 5 {
 		return "", fmt.Errorf("Please pass the correct requirement data")
 	}
 
-	if (requirementData[1] == "Manufacturer" || requirementData[1] == "Iot") {
+	if (requirementData[1] != "Beneficiary") {
 		return "", fmt.Errorf("%s can't make requirements", requirementData[1])
 	}
-	count , _ := strconv.ParseUint(requirementData[3], 0, 64)
 
-	var requirement = Requirement{Username:requirementData[0],Orgname:requirementData[1],Level:requirementData[2],Count:count}
+
+	var requirement = Requirement{Username:requirementData[0],Orgname:requirementData[1],Level:"State",State:requirementData[2],District:requirementData[3],Phc:requirementData[4],Vaccinated:false,VaccineID:""}
 
 	requirementAsBytes, err := json.Marshal(requirement)
 	if err != nil {
@@ -576,6 +698,71 @@ func (s *RequirementContract) CreateRequirement(ctx contractapi.TransactionConte
 
 
 	return ctx.GetStub().GetTxID(), ctx.GetStub().PutState(requirement.Username, requirementAsBytes)
+}
+
+func (s *RequirementContract) Vaccinated(ctx contractapi.TransactionContextInterface, requirementData []string) (string, error) {
+
+	if len(requirementData) != 2 {
+		return "", fmt.Errorf("Please pass the correct device id")
+	}
+
+	requirementAsBytes, err := ctx.GetStub().GetState(requirementData[0])
+
+	if err != nil {
+		return "", fmt.Errorf("Failed to get requirement data. %s", err.Error())
+	}
+
+	if requirementAsBytes == nil {
+		return "", fmt.Errorf("%s does not exist", requirementData[0])
+	}
+
+	requirement := new(Requirement)
+	_ = json.Unmarshal(requirementAsBytes, requirement)
+
+	requirement.Vaccinated = true
+	requirement.VaccineID = requirementData[1]
+
+	requirementAsBytes, err = json.Marshal(requirement)
+	if err != nil {
+		return "", fmt.Errorf("Failed while marshling device. %s", err.Error())
+	}
+
+	//  txId := ctx.GetStub().GetTxID()
+
+	return ctx.GetStub().GetTxID(), ctx.GetStub().PutState(requirement.Username, requirementAsBytes)
+
+}
+
+func (s *RequirementContract) UpdateLevel(ctx contractapi.TransactionContextInterface, requirementData []string) (string, error) {
+
+	if len(requirementData) != 2 {
+		return "", fmt.Errorf("Please pass the correct device id")
+	}
+
+	requirementAsBytes, err := ctx.GetStub().GetState(requirementData[0])
+
+	if err != nil {
+		return "", fmt.Errorf("Failed to get requirement data. %s", err.Error())
+	}
+
+	if requirementAsBytes == nil {
+		return "", fmt.Errorf("%s does not exist", requirementData[0])
+	}
+
+	requirement := new(Requirement)
+	_ = json.Unmarshal(requirementAsBytes, requirement)
+
+	requirement.Level = requirementData[1]
+
+	requirementAsBytes, err = json.Marshal(requirement)
+	if err != nil {
+		return "", fmt.Errorf("Failed while marshling device. %s", err.Error())
+	}
+
+	//  txId := ctx.GetStub().GetTxID()
+
+	return ctx.GetStub().GetTxID(), ctx.GetStub().PutState(requirement.Username, requirementAsBytes)
+
 }
 
 func (s *RequirementContract) GetRequirementByUsername(ctx contractapi.TransactionContextInterface, requirementUsername string) (*Requirement, error) {
@@ -628,6 +815,51 @@ func (s *RequirementContract) GetAllRequirements(ctx contractapi.TransactionCont
 		if (requirement.Username != "") {
 			results = append(results, queryResult)
 		}
+	}
+
+	return results, nil
+}
+
+func (s *RequirementContract) GetAreaRequirements(ctx contractapi.TransactionContextInterface, args []string) ([]RequirementQueryResult, error) {
+
+	startKey := ""
+	endKey := ""
+
+	resultsIterator, err := ctx.GetStub().GetStateByRange(startKey, endKey)
+
+	if err != nil {
+		return nil, err
+	}
+	defer resultsIterator.Close()
+
+	results := []RequirementQueryResult{}
+
+	for resultsIterator.HasNext() {
+		queryResponse, err := resultsIterator.Next()
+
+		if err != nil {
+			return nil, err
+		}
+
+		requirement := new(Requirement)
+		_ = json.Unmarshal(queryResponse.Value, requirement)
+
+		queryResult := RequirementQueryResult{Key: queryResponse.Key, Record: requirement}
+
+		if (args[0] == "State") {
+			if (requirement.State == args[1]) {
+				results = append(results, queryResult)
+			}
+		} else if (args[0] == "District") {
+			if (requirement.State == args[1] && requirement.District == args[2]) {
+				results = append(results, queryResult)
+			}
+		} else if (args[0] == "Phc") {
+			if (requirement.State == args[1] && requirement.District == args[2] && requirement.Phc==args[3]) {
+				results = append(results, queryResult)
+			}
+		}
+
 	}
 
 	return results, nil
@@ -691,9 +923,126 @@ func (s *RequirementContract) GetHistoryForRequirementAsset(ctx contractapi.Tran
 	return string(buffer.Bytes()), nil
 }
 
+
+func (s *FeedbackContract) CreateFeedback(ctx contractapi.TransactionContextInterface,feedbackData []string) (string, error) {
+
+	if len(feedbackData) != 3 {
+		return "", fmt.Errorf("Please pass the correct requirement data")
+	}
+
+	var feedback = Feedback{Username:feedbackData[0],VaccineID:feedbackData[1],Message:feedbackData[2]}
+
+	feedbackAsBytes, err := json.Marshal(feedback)
+	if err != nil {
+		return "", fmt.Errorf("Failed while marshling requirement. %s", err.Error())
+	}
+
+	temp, err := ctx.GetStub().GetState(feedback.Username)
+
+	if temp != nil {
+		return "", fmt.Errorf("%s already exists", feedback.Username)
+	}
+
+	ctx.GetStub().SetEvent("CreateAsset", feedbackAsBytes)
+
+
+	return ctx.GetStub().GetTxID(), ctx.GetStub().PutState(feedback.Username, feedbackAsBytes)
+}
+
+func (s *FeedbackContract) GetAllFeedbacks(ctx contractapi.TransactionContextInterface) ([]FeedbackQueryResult, error) {
+	startKey := ""
+	endKey := ""
+
+	resultsIterator, err := ctx.GetStub().GetStateByRange(startKey, endKey)
+
+	if err != nil {
+		return nil, err
+	}
+	defer resultsIterator.Close()
+
+	results := []FeedbackQueryResult{}
+
+	for resultsIterator.HasNext() {
+		queryResponse, err := resultsIterator.Next()
+
+		if err != nil {
+			return nil, err
+		}
+
+		feedback := new(Feedback)
+		_ = json.Unmarshal(queryResponse.Value, feedback)
+
+		queryResult := FeedbackQueryResult{Key: queryResponse.Key, Record: feedback}
+		if (feedback.Message != "") {
+			results = append(results, queryResult)
+		}
+	}
+
+	return results, nil
+}
+
+func (s *FeedbackContract) DeleteFeedbackByID(ctx contractapi.TransactionContextInterface, feedbackID string) (string, error) {
+	if len(feedbackID) == 0 {
+		return "", fmt.Errorf("Please provide correct contract Id")
+	}
+
+	return ctx.GetStub().GetTxID(), ctx.GetStub().DelState(feedbackID)
+}
+
+func (s *FeedbackContract) GetHistoryForFeedbackAsset(ctx contractapi.TransactionContextInterface, feedbackID string) (string, error) {
+
+	resultsIterator, err := ctx.GetStub().GetHistoryForKey(feedbackID)
+	if err != nil {
+		return "", fmt.Errorf(err.Error())
+	}
+	defer resultsIterator.Close()
+
+	var buffer bytes.Buffer
+	buffer.WriteString("[")
+
+	bArrayMemberAlreadyWritten := false
+	for resultsIterator.HasNext() {
+		response, err := resultsIterator.Next()
+		if err != nil {
+			return "", fmt.Errorf(err.Error())
+		}
+		if bArrayMemberAlreadyWritten == true {
+			buffer.WriteString(",")
+		}
+		buffer.WriteString("{\"TxId\":")
+		buffer.WriteString("\"")
+		buffer.WriteString(response.TxId)
+		buffer.WriteString("\"")
+
+		buffer.WriteString(", \"Value\":")
+		if response.IsDelete {
+			buffer.WriteString("null")
+		} else {
+			buffer.WriteString(string(response.Value))
+		}
+
+		buffer.WriteString(", \"Timestamp\":")
+		buffer.WriteString("\"")
+		buffer.WriteString(time.Unix(response.Timestamp.Seconds, int64(response.Timestamp.Nanos)).String())
+		buffer.WriteString("\"")
+
+		buffer.WriteString(", \"IsDelete\":")
+		buffer.WriteString("\"")
+		buffer.WriteString(strconv.FormatBool(response.IsDelete))
+		buffer.WriteString("\"")
+
+		buffer.WriteString("}")
+		bArrayMemberAlreadyWritten = true
+	}
+	buffer.WriteString("]")
+
+	return string(buffer.Bytes()), nil
+}
+
+
 func main() {
 
-	chaincode, err := contractapi.NewChaincode(new(VaccineContract), new(DeviceContract), new(RequirementContract))
+	chaincode, err := contractapi.NewChaincode(new(VaccineContract), new(DeviceContract), new(RequirementContract), new(FeedbackContract))
 	if err != nil {
 		fmt.Printf("Error create vaccine chaincode: %s", err.Error())
 		return

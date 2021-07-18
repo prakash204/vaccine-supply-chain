@@ -8,6 +8,8 @@
     "@testing-library/user-event": "^12.1.10",
     "axios": "^0.21.1",
     "bootstrap": "^4.6.0",
+    "json-server": "^0.16.3",
+    "jsonfile": "^4.0.0",
     "jsonwebtoken": "^8.5.1",
     "qrcode.react": "^1.0.1",
     "react": "^17.0.2",
@@ -16,7 +18,8 @@
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.3",
     "sha256": "^0.2.0",
-    "web-vitals": "^1.0.1"
+    "web-vitals": "^1.0.1",
+    "write-json-file": "^4.3.0"
   },
   "scripts": {
     "start": "react-scripts start",

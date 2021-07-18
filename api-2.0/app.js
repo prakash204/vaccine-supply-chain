@@ -216,6 +216,15 @@ app.get('/channels/:channelName/chaincodes/:chaincodeName', async function (req,
           case 'GetAllDevices':
             args = req.username;
             break;
+          case 'GetRequirementByUsername':
+            args = req.query.args;
+            break;
+          case 'GetAreaRequirements':
+            args = req.body.args;
+            break;
+          case 'GetAllRequirements':
+            args = req.username;
+            break;
           default:
             args = req.query.args;
             break;

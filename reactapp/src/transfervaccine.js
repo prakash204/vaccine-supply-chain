@@ -12,7 +12,7 @@ class TransferVaccine extends Component {
     super(props);
     this.state= {
       myvaccines: [],
-      response: [],
+      response: []
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -95,12 +95,18 @@ class TransferVaccine extends Component {
             {this.InputsForDistricPhc()}
         </select>
       )
+    } else if (localStorage.getItem('orgName') === 'Med') {
+      return (
+        <input type="text" name="to" />
+      )
     }
   }
 
   handleChange(event) {
     const name = event.target.name;
-    if (this.checkedVaccines.has(name)) {
+    if (event.target.name === 'to') {
+      //do-nothing
+    } else if (this.checkedVaccines.has(name)) {
       this.checkedVaccines.delete(name);
     } else {
       this.checkedVaccines.add(name);
@@ -110,8 +116,8 @@ class TransferVaccine extends Component {
   handleSubmit(event){
     event.preventDefault();
 
-
     var args = [];
+    let response =[];
     const apiurl = "http://localhost:4000/channels/mychannel/chaincodes/vacsup_cc";
     const token = localStorage.getItem('token');
     args.push(event.target.elements.to.value);
@@ -131,10 +137,9 @@ class TransferVaccine extends Component {
     axios.post(apiurl , data, {headers : {'Authorization':`Bearer ${token}`, 'Content-Type':'application/json'}})
       .then(res => {
         console.log(res);
-        this.setState({response:res})
+        response = res;
       })
       .catch(err => console.log(err));
-
 
   }
 
@@ -150,7 +155,10 @@ class TransferVaccine extends Component {
           {this.getInputOptionsForTransfer()}
         </label>
         <button className="submit-transfer" type="submit">Submit</button>
-        <Table>
+        {
+          localStorage.getItem('orgName') !== 'Med' ?
+
+          <Table>
           <thead>
             <tr>
               <th>ID</th>
@@ -163,7 +171,12 @@ class TransferVaccine extends Component {
           <tbody>
             {this.renderMyVaccines()}
           </tbody>
-        </Table>
+          </Table>
+
+          :
+
+          ""
+        }
       </form>
 
       </div>

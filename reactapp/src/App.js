@@ -11,6 +11,8 @@ import AddDevice from './adddevice';
 import AddVaccine from './addvaccine';
 import TransferVaccine from './transfervaccine';
 import UpdateDevice from './updatedevice';
+import Requirement from './requirement';
+import Vaccinate from './vaccinate';
 
 class App extends Component {
 
@@ -49,6 +51,12 @@ class App extends Component {
       <Route exact path="/transfer-vaccine">
         <TransferVaccine />
       </Route>
+      <Route exact path="/requirement">
+      <Requirement />
+      </Route>
+      <Route exact path="/verify-vaccinate">
+      <Vaccinate />
+      </Route>
       { this.state.orgname === 'Manufacturer'
         ?
           <>
@@ -62,6 +70,7 @@ class App extends Component {
         :
         ""
       }
+
       <Route path="/update_temp_location/:id/" component={UpdateDevice}/>
     </Switch>
     </Router>

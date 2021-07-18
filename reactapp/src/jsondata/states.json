@@ -1,558 +1,698 @@
 {
-    "states": [
-      {
-        "name":"Andhra Pradesh",
-        "districts": [
-          {
-            "name":"Anantapur",
-            "phcs":[]
-          },
-          {
-            "name":"Chittor",
-            "phcs":[]
-          },
-          {
-            "name":"EastGodavari",
-            "phcs":[]
-          },
-          {
-            "name":"Guntur",
-            "phcs":[]
-          },
-          {
-            "name":"Krishna",
-            "phcs":[]
-          },
-          {
-            "name":"Kurnool",
-            "phcs":[]
-          },
-          {
-            "name":"Prakasam",
-            "phcs":[]
-          },
-          {
-            "name":"Srikakulam",
-            "phcs":[]
-          },
-          {
-            "name":"Sri Potti Sriramulu",
-            "phcs":[]
-          },
-          {
-            "name":"Nellore",
-            "phcs":[]
-          },
-          {
-            "name":"Vishakapatnam",
-            "phcs":[]
-          },
-          {
-            "name":"Vizianagaram",
-            "phcs":[]
-          },
-          {
-            "name":"West Godavari",
-            "phcs":[]
-          },
-          {
-            "name":"YSR District",
-            "phcs":[]
-          },
-          {
-            "name":"Kadapa",
-            "phcs":[]
-          }
-      ]
-    },
-      {
-      "name":"Karnataka",
+  "states": [
+    {
+      "id": 1,
+      "name": "Andhra Pradesh",
       "districts": [
         {
-          "name":"Bagalkot",
-          "phcs":[]
+          "id": 1,
+          "name": "Anantapur",
+          "phcs": []
         },
         {
-          "name":"Ballari",
-          "phcs":[]
+          "id": 2,
+          "name": "Chittor",
+          "phcs": []
         },
         {
-          "name":"Belagavi",
-          "phcs":[]
+          "id": 3,
+          "name": "EastGodavari",
+          "phcs": []
         },
         {
-          "name":"Bengaluru Rural",
-          "phcs":[]
+          "id": 4,
+          "name": "Guntur",
+          "phcs": []
         },
         {
-          "name":"Bengaluru Urban",
-          "phcs":[]
+          "id": 5,
+          "name": "Krishna",
+          "phcs": []
         },
         {
-          "name":"Bidar",
-          "phcs":[]
+          "id": 6,
+          "name": "Kurnool",
+          "phcs": []
         },
         {
-          "name":"Chamarajanagar",
-          "phcs":[]
+          "id": 7,
+          "name": "Prakasam",
+          "phcs": []
         },
         {
-          "name":"Chikballapur",
-          "phcs":[]
+          "id": 8,
+          "name": "Srikakulam",
+          "phcs": []
         },
         {
-          "name":"Chikkamagaluru",
-          "phcs":[]
+          "id": 9,
+          "name": "Sri Potti Sriramulu",
+          "phcs": []
         },
         {
-          "name":"Chitradurga",
-          "phcs":[]
+          "id": 10,
+          "name": "Nellore",
+          "phcs": []
         },
         {
-          "name":"Dakshina Kannada",
-          "phcs":[]
+          "id": 11,
+          "name": "Vishakapatnam",
+          "phcs": []
         },
         {
-          "name":"Davangere",
-          "phcs":[]
+          "id": 12,
+          "name": "Vizianagaram",
+          "phcs": []
         },
         {
-          "name":"Dharwad",
-          "phcs":[]
+          "id": 13,
+          "name": "West Godavari",
+          "phcs": []
         },
         {
-          "name":"Gadag",
-          "phcs":[]
+          "id": 14,
+          "name": "YSR District",
+          "phcs": []
         },
         {
-          "name":"Hassan",
-          "phcs":[]
-        },
-        {
-          "name":"Haveri",
-          "phcs":[]
-        },
-        {
-          "name":"Gulbarga",
-          "phcs":[]
-        },
-        {
-          "name":"Kodagu",
-          "phcs":[]
-        },
-        {
-          "name":"Kolar",
-          "phcs":[]
-        },
-        {
-          "name":"Koppal",
-          "phcs":[]
-        },
-        {
-          "name":"Mandya",
-          "phcs":[]
-        },
-        {
-          "name":"Mysore",
-          "phcs":[]
-        },
-        {
-          "name":"Raichur",
-          "phcs":[]
-        },
-        {
-          "name":"Ramanagara",
-          "phcs":[]
-        },
-        {
-          "name":"Shivamogga",
-          "phcs":[]
-        },
-        {
-          "name":"Tumakuru",
-          "phcs":[]
-        },
-        {
-          "name":"Udupi",
-          "phcs":[]
-        },
-        {
-          "name":"Uttara Kannada",
-          "phcs":[]
-        },
-        {
-          "name":"Bijapur",
-          "phcs":[]
-        },
-        {
-          "name":"Yadgir",
-          "phcs":[]
+          "id": 15,
+          "name": "Kadapa",
+          "phcs": []
         }
       ]
     },
-      {
-        "name":"Kerala",
-        "districts":[
-          {
-            "name":"Thiruvananthapuram",
-            "phcs":[]
-          },
-          {
-            "name":"Kollam",
-            "phcs":[]
-          },
-          {
-            "name":"Alappuzha",
-            "phcs":[]
-          },
-          {
-            "name":"Pathanamthitta",
-            "phcs":[]
-          },
-          {
-            "name":"Kottayam",
-            "phcs":[]
-          },
-          {
-            "name":"Idukki",
-            "phcs":[]
-          },
-          {
-            "name":"Ernakulam",
-            "phcs":[]
-          },
-          {
-            "name":"Thrissur",
-            "phcs":[]
-          },
-          {
-            "name":"Palakkad",
-            "phcs":[]
-          },
-          {
-            "name":"Malappuram",
-            "phcs":[]
-          },
-          {
-            "name":"Kozhikode",
-            "phcs":[]
-          },
-          {
-            "name":"Wayanad",
-            "phcs":[]
-          },
-          {
-            "name":"Kannur",
-            "phcs":[]
-          },
-          {
-            "name":"Kasaragod",
-            "phcs":[]
-          }
-        ]
-      },
-      {
-        "name":"Tamil Nadu",
-        "districts":[
-          {
-            "name":"Ariyalur",
-            "phcs":[]
-          },
-          {
-            "name":"Chengalpattu",
-            "phcs":[]
-          },
-          {
-            "name":"Chennai",
-            "phcs":[]
-          },
-          {
-            "name":"Coimbatore",
-            "phcs":[]
-          },
-          {
-            "name":"Cuddalore",
-            "phcs":[]
-          },
-          {
-            "name":"Dharmapuri",
-            "phcs":[]
-          },
-          {
-            "name":"Dindigul",
-            "phcs":[]
-          },
-          {
-            "name":"Erode",
-            "phcs":[]
-          },
-          {
-            "name":"Kallakurichi",
-            "phcs":[]
-          },
-          {
-            "name":"Kanchipuram",
-            "phcs":[]
-          },
-          {
-            "name":"Kanyakumari",
-            "phcs":[]
-          },
-          {
-            "name":"Karur",
-            "phcs":[]
-          },
-          {
-            "name":"Krishnagiri",
-            "phcs":[]
-          },
-          {
-            "name":"Madurai",
-            "phcs":[]
-          },
-          {
-            "name":"Nagapattinam",
-            "phcs":[]
-          },
-          {
-            "name":"Namakkal",
-            "phcs":[]
-          },
-          {
-            "name":"Nilgiris",
-            "phcs":[]
-          },
-          {
-            "name":"Perambalur",
-            "phcs":[]
-          },
-          {
-            "name":"Pudukkottai",
-            "phcs":[]
-          },
-          {
-            "name":"Ramanathapuram",
-            "phcs":[]
-          },
-          {
-            "name":"Ranipet",
-            "phcs":[]
-          },
-          {
-            "name":"Salem",
-            "phcs":[]
-          },
-          {
-            "name":"Sivaganga",
-            "phcs":[]
-          },
-          {
-            "name":"Tenkasi",
-            "phcs":[]
-          },
-          {
-            "name":"Thanjavur",
-            "phcs":[]
-          },
-          {
-            "name":"Theni",
-            "phcs":[]
-          },
-          {
-            "name":"Thoothukudi",
-            "phcs":[]
-          },
-          {
-            "name":"Tiruchirappalli",
-            "phcs":[]
-          },
-          {
-            "name":"Tirunelveli",
-            "phcs":[]
-          },
-          {
-            "name":"Tirupathur",
-            "phcs":[]
-          },
-          {
-            "name":"Tiruppur",
-            "phcs":[]
-          },
-          {
-            "name":"Tiruvallur",
-            "phcs":[]
-          },
-          {
-            "name":"Tiruvannamalai",
-            "phcs":[]
-          },
-          {
-            "name":"Tiruvarur",
-            "phcs":[]
-          },
-          {
-            "name":"Vellore",
-            "phcs":[]
-          },
-          {
-            "name":"Viluppuram",
-            "phcs":[]
-          },
-          {
-            "name":"Virudhunagar",
-            "phcs":[]
-          }
-        ]
-      },
-      {
-        "name":"Telangana",
-        "districts":[
-          {
-            "name":"Adilabad",
-            "phcs":[]
-          },
-          {
-            "name": "Bhadradri Kothagudem",
-            "phcs":[]
-          },
-          {
-            "name":  "Hyderabad",
-            "phcs":[]
-          },
-          {
-            "name":  "Jagtial",
-            "phcs":[]
-          },
-          {
-            "name":  "Jangaon",
-            "phcs":[]
-          },
-          {
-            "name":  "Jayashankar Bhupalapally",
-            "phcs":[]
-          },
-          {
-            "name":  "Jogulamba Gadwal",
-            "phcs":[]
-          },
-          {
-            "name":  "Kamareddy",
-            "phcs":[]
-          },
-          {
-            "name":  "Karimnagar",
-            "phcs":[]
-          },
-          {
-            "name":  "Khammam",
-            "phcs":["SR&BGNR PG College"]
-          },
-          {
-            "name":  "Kumarambheem Asifabad",
-            "phcs":[]
-          },
-          {
-            "name":  "Mahabubabad",
-            "phcs":[]
-          },
-          {
-            "name":  "Mahabubnagar",
-            "phcs":[]
-          },
-          {
-            "name":  "Mancherial",
-            "phcs":[]
-          },
-          {
-            "name":  "Medak",
-            "phcs":[]
-          },
-          {
-            "name":  "Medchal–Malkajgiri",
-            "phcs":[]
-          },
-          {
-            "name":  "Nagarkurnool",
-            "phcs":[]
-          },
-          {
-            "name":  "Nalgonda",
-            "phcs":[]
-          },
-          {
-            "name":  "Nirmal",
-            "phcs":[]
-          },
-          {
-            "name":  "Nizamabad",
-            "phcs":[]
-          },
-          {
-            "name":  "Peddapalli",
-            "phcs":[]
-          },
-          {
-            "name":  "Rajanna Sircilla",
-            "phcs":[]
-          },
-          {
-            "name":  "Ranga Reddy",
-            "phcs":[]
-          },
-          {
-            "name":  "Sangareddy",
-            "phcs":[]
-          },
-          {
-            "name":  "Siddipet",
-          "phcs":[]
-          },
-          {
-          "name":  "Suryapet",
-          "phcs":[]
-          },
-          {
-          "name":  "Vikarabad",
-          "phcs":[]
-          },
-          {
-          "name":  "Wanaparthy",
-          "phcs":[]
-          },
-          {
-          "name":  "Warangal Rural",
-          "phcs":[]
-          },
-          {
-          "name":  "Warangal Urban",
-          "phcs":[]
-          },
-          {
-            "name":  "Yadadri Bhuvanagiri",
-            "phcs":[]
-          }
-        ]
-      },
-      {
-        "name":"Puducherry",
-        "districts":[
-          {
-            "name":"Puducherry",
-            "phcs":[]
-          },
-          {
-            "name":"Karaikal",
-            "phcs":[]
-          },
-          {
-            "name":"Mahé",
-            "phcs":[]
-          },
-          {
-            "name":"Yanam",
-            "phcs":[]
-          }
-        ]
-      }
-    ]
+    {
+      "id": 2,
+      "name": "Karnataka",
+      "districts": [
+        {
+          "id": 1,
+          "name": "Bagalkot",
+          "phcs": []
+        },
+        {
+          "id": 2,
+          "name": "Ballari",
+          "phcs": []
+        },
+        {
+          "id": 3,
+          "name": "Belagavi",
+          "phcs": []
+        },
+        {
+          "id": 4,
+          "name": "Bengaluru Rural",
+          "phcs": []
+        },
+        {
+          "id": 5,
+          "name": "Bengaluru Urban",
+          "phcs": []
+        },
+        {
+          "id": 6,
+          "name": "Bidar",
+          "phcs": []
+        },
+        {
+          "id": 7,
+          "name": "Chamarajanagar",
+          "phcs": []
+        },
+        {
+          "id": 8,
+          "name": "Chikballapur",
+          "phcs": []
+        },
+        {
+          "id": 9,
+          "name": "Chikkamagaluru",
+          "phcs": []
+        },
+        {
+          "id": 10,
+          "name": "Chitradurga",
+          "phcs": []
+        },
+        {
+          "id": 11,
+          "name": "Dakshina Kannada",
+          "phcs": []
+        },
+        {
+          "id": 12,
+          "name": "Davangere",
+          "phcs": []
+        },
+        {
+          "id": 13,
+          "name": "Dharwad",
+          "phcs": []
+        },
+        {
+          "id": 14,
+          "name": "Gadag",
+          "phcs": []
+        },
+        {
+          "id": 15,
+          "name": "Hassan",
+          "phcs": []
+        },
+        {
+          "id": 16,
+          "name": "Haveri",
+          "phcs": []
+        },
+        {
+          "id": 17,
+          "name": "Gulbarga",
+          "phcs": []
+        },
+        {
+          "id": 18,
+          "name": "Kodagu",
+          "phcs": []
+        },
+        {
+          "id": 19,
+          "name": "Kolar",
+          "phcs": []
+        },
+        {
+          "id": 20,
+          "name": "Koppal",
+          "phcs": []
+        },
+        {
+          "id": 21,
+          "name": "Mandya",
+          "phcs": []
+        },
+        {
+          "id": 22,
+          "name": "Mysore",
+          "phcs": []
+        },
+        {
+          "id": 23,
+          "name": "Raichur",
+          "phcs": []
+        },
+        {
+          "id": 24,
+          "name": "Ramanagara",
+          "phcs": []
+        },
+        {
+          "id": 25,
+          "name": "Shivamogga",
+          "phcs": []
+        },
+        {
+          "id": 26,
+          "name": "Tumakuru",
+          "phcs": []
+        },
+        {
+          "id": 27,
+          "name": "Udupi",
+          "phcs": []
+        },
+        {
+          "id": 28,
+          "name": "Uttara Kannada",
+          "phcs": []
+        },
+        {
+          "id": 29,
+          "name": "Bijapur",
+          "phcs": []
+        },
+        {
+          "id": 30,
+          "name": "Yadgir",
+          "phcs": []
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "Kerala",
+      "districts": [
+        {
+          "id": 1,
+          "name": "Thiruvananthapuram",
+          "phcs": []
+        },
+        {
+          "id": 2,
+          "name": "Kollam",
+          "phcs": []
+        },
+        {
+          "id": 3,
+          "name": "Alappuzha",
+          "phcs": []
+        },
+        {
+          "id": 4,
+          "name": "Pathanamthitta",
+          "phcs": []
+        },
+        {
+          "id": 5,
+          "name": "Kottayam",
+          "phcs": []
+        },
+        {
+          "id": 6,
+          "name": "Idukki",
+          "phcs": []
+        },
+        {
+          "id": 7,
+          "name": "Ernakulam",
+          "phcs": []
+        },
+        {
+          "id": 8,
+          "name": "Thrissur",
+          "phcs": []
+        },
+        {
+          "id": 9,
+          "name": "Palakkad",
+          "phcs": []
+        },
+        {
+          "id": 10,
+          "name": "Malappuram",
+          "phcs": []
+        },
+        {
+          "id": 11,
+          "name": "Kozhikode",
+          "phcs": []
+        },
+        {
+          "id": 12,
+          "name": "Wayanad",
+          "phcs": []
+        },
+        {
+          "id": 13,
+          "name": "Kannur",
+          "phcs": []
+        },
+        {
+          "id": 14,
+          "name": "Kasaragod",
+          "phcs": []
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "name": "Tamil Nadu",
+      "districts": [
+        {
+          "id": 1,
+          "name": "Ariyalur",
+          "phcs": []
+        },
+        {
+          "id": 2,
+          "name": "Chengalpattu",
+          "phcs": []
+        },
+        {
+          "id": 3,
+          "name": "Chennai",
+          "phcs": []
+        },
+        {
+          "id": 4,
+          "name": "Coimbatore",
+          "phcs": []
+        },
+        {
+          "id": 5,
+          "name": "Cuddalore",
+          "phcs": []
+        },
+        {
+          "id": 6,
+          "name": "Dharmapuri",
+          "phcs": []
+        },
+        {
+          "id": 7,
+          "name": "Dindigul",
+          "phcs": []
+        },
+        {
+          "id": 8,
+          "name": "Erode",
+          "phcs": []
+        },
+        {
+          "id": 9,
+          "name": "Kallakurichi",
+          "phcs": []
+        },
+        {
+          "id": 10,
+          "name": "Kanchipuram",
+          "phcs": []
+        },
+        {
+          "id": 11,
+          "name": "Kanyakumari",
+          "phcs": []
+        },
+        {
+          "id": 12,
+          "name": "Karur",
+          "phcs": []
+        },
+        {
+          "id": 13,
+          "name": "Krishnagiri",
+          "phcs": []
+        },
+        {
+          "id": 14,
+          "name": "Madurai",
+          "phcs": []
+        },
+        {
+          "id": 15,
+          "name": "Nagapattinam",
+          "phcs": []
+        },
+        {
+          "id": 16,
+          "name": "Namakkal",
+          "phcs": []
+        },
+        {
+          "id": 17,
+          "name": "Nilgiris",
+          "phcs": []
+        },
+        {
+          "id": 18,
+          "name": "Perambalur",
+          "phcs": []
+        },
+        {
+          "id": 19,
+          "name": "Pudukkottai",
+          "phcs": []
+        },
+        {
+          "id": 20,
+          "name": "Ramanathapuram",
+          "phcs": []
+        },
+        {
+          "id": 21,
+          "name": "Ranipet",
+          "phcs": []
+        },
+        {
+          "id": 22,
+          "name": "Salem",
+          "phcs": []
+        },
+        {
+          "id": 23,
+          "name": "Sivaganga",
+          "phcs": []
+        },
+        {
+          "id": 24,
+          "name": "Tenkasi",
+          "phcs": []
+        },
+        {
+          "id": 25,
+          "name": "Thanjavur",
+          "phcs": []
+        },
+        {
+          "id": 26,
+          "name": "Theni",
+          "phcs": []
+        },
+        {
+          "id": 27,
+          "name": "Thoothukudi",
+          "phcs": []
+        },
+        {
+          "id": 28,
+          "name": "Tiruchirappalli",
+          "phcs": []
+        },
+        {
+          "id": 29,
+          "name": "Tirunelveli",
+          "phcs": []
+        },
+        {
+          "id": 30,
+          "name": "Tirupathur",
+          "phcs": []
+        },
+        {
+          "id": 31,
+          "name": "Tiruppur",
+          "phcs": []
+        },
+        {
+          "id": 32,
+          "name": "Tiruvallur",
+          "phcs": []
+        },
+        {
+          "id": 33,
+          "name": "Tiruvannamalai",
+          "phcs": []
+        },
+        {
+          "id": 34,
+          "name": "Tiruvarur",
+          "phcs": []
+        },
+        {
+          "id": 35,
+          "name": "Vellore",
+          "phcs": []
+        },
+        {
+          "id": 36,
+          "name": "Viluppuram",
+          "phcs": []
+        },
+        {
+          "id": 37,
+          "name": "Virudhunagar",
+          "phcs": []
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "name": "Telangana",
+      "districts": [
+        {
+          "id": 1,
+          "name": "Adilabad",
+          "phcs": []
+        },
+        {
+          "id": 2,
+          "name": "Bhadradri Kothagudem",
+          "phcs": []
+        },
+        {
+          "id": 3,
+          "name": "Hyderabad",
+          "phcs": []
+        },
+        {
+          "id": 4,
+          "name": "Jagtial",
+          "phcs": []
+        },
+        {
+          "id": 5,
+          "name": "Jangaon",
+          "phcs": []
+        },
+        {
+          "id": 6,
+          "name": "Jayashankar Bhupalapally",
+          "phcs": []
+        },
+        {
+          "id": 7,
+          "name": "Jogulamba Gadwal",
+          "phcs": []
+        },
+        {
+          "id": 8,
+          "name": "Kamareddy",
+          "phcs": []
+        },
+        {
+          "id": 9,
+          "name": "Karimnagar",
+          "phcs": []
+        },
+        {
+          "id": 10,
+          "name": "Khammam",
+          "phcs": [
+            "Uphc SP nagar",
+            "Uphc VK nagar"
+          ]
+        },
+        {
+          "id": 11,
+          "name": "Kumarambheem Asifabad",
+          "phcs": []
+        },
+        {
+          "id": 12,
+          "name": "Mahabubabad",
+          "phcs": []
+        },
+        {
+          "id": 13,
+          "name": "Mahabubnagar",
+          "phcs": []
+        },
+        {
+          "id": 14,
+          "name": "Mancherial",
+          "phcs": []
+        },
+        {
+          "id": 15,
+          "name": "Medak",
+          "phcs": []
+        },
+        {
+          "id": 16,
+          "name": "Medchal–Malkajgiri",
+          "phcs": []
+        },
+        {
+          "id": 17,
+          "name": "Nagarkurnool",
+          "phcs": []
+        },
+        {
+          "id": 18,
+          "name": "Nalgonda",
+          "phcs": []
+        },
+        {
+          "id": 19,
+          "name": "Nirmal",
+          "phcs": []
+        },
+        {
+          "id": 20,
+          "name": "Nizamabad",
+          "phcs": []
+        },
+        {
+          "id": 21,
+          "name": "Peddapalli",
+          "phcs": []
+        },
+        {
+          "id": 22,
+          "name": "Rajanna Sircilla",
+          "phcs": []
+        },
+        {
+          "id": 23,
+          "name": "Ranga Reddy",
+          "phcs": []
+        },
+        {
+          "id": 24,
+          "name": "Sangareddy",
+          "phcs": []
+        },
+        {
+          "id": 25,
+          "name": "Siddipet",
+          "phcs": []
+        },
+        {
+          "id": 26,
+          "name": "Suryapet",
+          "phcs": []
+        },
+        {
+          "id": 27,
+          "name": "Vikarabad",
+          "phcs": []
+        },
+        {
+          "id": 28,
+          "name": "Wanaparthy",
+          "phcs": []
+        },
+        {
+          "id": 29,
+          "name": "Warangal Rural",
+          "phcs": []
+        },
+        {
+          "id": 30,
+          "name": "Warangal Urban",
+          "phcs": []
+        },
+        {
+          "id": 31,
+          "name": "Yadadri Bhuvanagiri",
+          "phcs": []
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "name": "Puducherry",
+      "districts": [
+        {
+          "id": 1,
+          "name": "Puducherry",
+          "phcs": []
+        },
+        {
+          "id": 2,
+          "name": "Karaikal",
+          "phcs": []
+        },
+        {
+          "id": 3,
+          "name": "Mahé",
+          "phcs": []
+        },
+        {
+          "id": 4,
+          "name": "Yanam",
+          "phcs": []
+        }
+      ]
+    }
+  ]
 }

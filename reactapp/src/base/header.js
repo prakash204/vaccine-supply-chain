@@ -40,6 +40,21 @@ class Header extends Component {
     }
   }
 
+  chooseForRequirement(){
+    if (this.state.orgname === 'Manufacturer' || this.state.orgname === 'Distribution') {
+      return (
+        <a href="/requirement">Requirement</a>
+      )
+    }
+  }
+
+  chooseForVerifyandVaccinate(){
+    if (this.state.orgname === 'Med') {
+      return <a href="/verify-vaccinate">Vaccinate</a>
+    }
+  }
+
+
   logout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('username');
@@ -62,6 +77,8 @@ class Header extends Component {
           <a href="/dashboard">Dashboard</a>
           {this.chooseForTransfer()}
           {this.chooseForAdd()}
+          {this.chooseForRequirement()}
+          {this.chooseForVerifyandVaccinate()}
           <a href="/" onClick={this.logout}>logout</a>
         </div>
 

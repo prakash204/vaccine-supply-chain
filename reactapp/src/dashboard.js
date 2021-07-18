@@ -36,13 +36,27 @@ class Dashboard extends Component {
 
   componentDidMount() {
     this.setState({username:localStorage.getItem('username'), orgname : localStorage.getItem('orgName')});
+    const apiurl_2 = `http://localhost:4000/channels/mychannel/chaincodes/vacsup_cc?args=${localStorage.getItem('username')}&fcn=GetRequirementByUsername`;
+    const apiurl = 'http://localhost:4000/channels/mychannel/chaincodes/vacsup_cc?fcn=GetMyVaccine';
 
     axios.get(apiurl, { headers : { 'Authorization':`Bearer ${token}`,'Content-Type':'application/json'}})
       .then(res => {
         this.setState({ myvaccines :res.data.result});
         console.log(res.data.result);
+
+        if (localStorage.getItem('orgName') === 'Beneficiary') {
+          axios.get(apiurl_2, { headers : { 'Authorization':`Bearer ${token}`,'Content-Type':'application/json'}})
+          .then(response => {
+            console.log(response);
+            if (response.data.result === `${localStorage.getItem('username')} does not exist`) {
+              this.setState({registered:false});
+            } else this.setState({registered:true});
+          })
+          .catch(err => console.log(err));
+        }
       })
       .catch(err => console.log(err));
+
     //console.log(this.state.myvaccines);
   }
 
@@ -189,8 +203,8 @@ class Dashboard extends Component {
 
       if (this.state.registered) {
 
-        return <><h2>You are already registered!!!</h2><QRCode id="qrcode" value={this.state.qrvalue} /><a href="#" onClick={this.downloadQR}>download</a></>
-
+        return <><h2>You are already registered!!!</h2></>
+//<QRCode id="qrcode" value={this.state.qrvalue} /><a href="#" onClick={this.downloadQR}>download</a>
       } else {
 
         return <>{this.registerForVaccine()}</>
@@ -215,7 +229,7 @@ class Dashboard extends Component {
         break;
       }
       case 'phc': {
-        this.setStae({phc: event.target.value});
+        this.setState({phc: event.target.value});
       }
     }
   };
@@ -225,17 +239,17 @@ class Dashboard extends Component {
 
     const passcode = event.target.elements.passcode.value;
     const data = {
-      fcn:"RegisterForVaccine",
+      fcn:"CreateRequirement",
       peers:["peer0.manufacturer.example.com","peer0.distribution.example.com","peer0.med.example.com","peer0.beneficiary.example.com","peer0.iot.example.com"],
       chaincodeName:"vacsup_cc",
       channelName:"mychannel",
-      args:[this.state.state, this.state.district, passcode]
+      args:[this.state.username, this.state.orgname,this.state.state_t, this.state.district,this.state.phc]
     };
 
-    /*axios.post('http://localhost:4000/channels/mychannel/chaincodes/vacsu_cc/',data,{ headers: { 'Authorization':`Bearer ${token}`,'Content-Type':'application/json' } })
+    axios.post('http://localhost:4000/channels/mychannel/chaincodes/vacsup_cc/',data,{ headers: { 'Authorization':`Bearer ${token}`,'Content-Type':'application/json' } })
       .then(res => console.log(res))
-      .catch(err => console.log(err));*/
-    this.setState({qrvalue : sha256(this.state.username + passcode), registered:true });
+      .catch(err => console.log(err));
+    //this.setState({qrvalue : sha256(this.state.username + passcode), registered:true });
   }
 
 

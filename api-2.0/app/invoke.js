@@ -57,19 +57,49 @@ const invokeTransaction = async ( channelName, chaincodeName, fcn, args, usernam
                 result = await contract.submitTransaction('DeviceContract:'+fcn,JSON.stringify(args));
                 result = {txid: result.toString()}
                 break;
+            case "CreateRequirement":
+                result = await contract.submitTransaction('RequirementContract:'+fcn,JSON.stringify(args));
+                result = {txid: result.toString()}
+                break;
             case "UpdateVaccineOwner":
                 console.log("=============")
-                let result = {txid:[]}
+                let temp_result_1 = {txid:[]}
                 for ( let i=1; i<args.length; i++ ) {
                   res = await contract.submitTransaction('VaccineContract:'+fcn, args[i] ,args[0]);
-                  result.txid.push(res.toString());
+                  temp_result_1.txid.push(res.toString());
                 }
+                result = temp_result_1;
                 break;
             case "SetTemplocation":
                 console.log("=============");
-                console.log("hellooo"+args+" "+fcn);
                 result = await contract.submitTransaction('DeviceContract:'+fcn, args[0], args[1], args[2], args[3], args[4] );
                 result = {txid: result.toString()}
+                break;
+            case "Vaccinated":
+                console.log("=============");
+                result = await contract.submitTransaction('RequirementContract:'+fcn, args );
+                result = {txid: result.toString()}
+                break;
+            case "UpdateLevel":
+                console.log("=============");
+                let requirements;
+                let data =[];
+                let temp_result_2 = {txid:[]};
+                requirements = await contract.evaluateTransaction('RequirementContract:GetAllRequirements');
+                console.log(requirements);
+                requirements = JSON.parse(requirements.toString());
+                console.log("hoho"+requirements+requirements.length+data.length);
+                for (let i=0;i<requirements.length;i++) {
+                  if (requirements[i].Record.state == args[1] && requirements[i].Record.district == args[2] && requirements[i].Record.phc == args[3]) {
+                    console.log(typeof requirements[i].Record.username);
+                    console.log(typeof args[0]);
+                    data = [requirements[i].Record.username,args[0]];
+                    console.log(typeof data);
+                    temp_res = await contract.submitTransaction('RequirementContract:'+fcn, JSON.stringify(data) );
+                    temp_result_2.txid.push(temp_res.toString());
+                  }
+                }
+                result = temp_result_2;
                 break;
             default:
                 break;
