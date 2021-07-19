@@ -66,11 +66,15 @@ const query = async (channelName, chaincodeName, args, fcn, username, org_name) 
 
             case "GetVaccineById":
                 console.log("=============")
-                result = await contract.evaluateTransaction('VaccineContract:'+fcn, args[0]);
+                result = await contract.evaluateTransaction('VaccineContract:'+fcn, args);
+                break;
+            case "GetFeedbackById":
+                console.log("=============")
+                result = await contract.evaluateTransaction('FeedbackContract:'+fcn, args);
                 break;
             case "GetDeviceById":
                 console.log("=============")
-                result = await contract.evaluateTransaction('DeviceContract:'+fcn, String(args));
+                result = await contract.evaluateTransaction('DeviceContract:'+fcn, args);
                 break;
             case "GetRequirementByUsername":
                 console.log("=============")
@@ -81,9 +85,17 @@ const query = async (channelName, chaincodeName, args, fcn, username, org_name) 
                 console.log("============"+args)
                 result = await contract.evaluateTransaction('VaccineContract:'+fcn, args );
                 break;
+            case "GetAllVaccines":
+                console.log("============"+args)
+                result = await contract.evaluateTransaction('VaccineContract:'+fcn);
+                break;
             case "GetAllRequirements":
                 console.log("============"+args)
                 result = await contract.evaluateTransaction('RequirementContract:'+fcn);
+                break;
+            case "GetAllFeedbacks":
+                console.log("============"+args)
+                result = await contract.evaluateTransaction('FeedbackContract:'+fcn);
                 break;
             case "GetAreaRequirements":
                 console.log("============"+args)

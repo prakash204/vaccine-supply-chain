@@ -949,6 +949,30 @@ func (s *FeedbackContract) CreateFeedback(ctx contractapi.TransactionContextInte
 	return ctx.GetStub().GetTxID(), ctx.GetStub().PutState(feedback.Username, feedbackAsBytes)
 }
 
+func (s *FeedbackContract) GetFeedbackById(ctx contractapi.TransactionContextInterface, feedbackId string) (*Feedback, error) {
+	if len(feedbackId) == 0 {
+		return nil, fmt.Errorf("Please provide correct contract Username")
+		// return shim.Error("Incorrect number of arguments. Expecting 1")
+	}
+
+	feedbackAsBytes, err := ctx.GetStub().GetState(feedbackId)
+
+	if err != nil {
+		return nil, fmt.Errorf("Failed to read from world state. %s", err.Error())
+	}
+
+	if feedbackAsBytes == nil {
+		return nil, fmt.Errorf("%s does not exist", feedbackId)
+	}
+
+	feedback := new(Feedback)
+	_ = json.Unmarshal(feedbackAsBytes, feedback)
+
+	return feedback, nil
+
+}
+
+
 func (s *FeedbackContract) GetAllFeedbacks(ctx contractapi.TransactionContextInterface) ([]FeedbackQueryResult, error) {
 	startKey := ""
 	endKey := ""

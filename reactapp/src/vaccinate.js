@@ -14,10 +14,12 @@ class Vaccinate extends Component {
       id:'',
       registered:false,
       verified:false,
-      vaccinated:false
+      vaccinated:false,
+      vaccineId: ''
     }
     this.handleChange = this.handleChange.bind(this);
     this.handleVerify = this.handleVerify.bind(this);
+    this.handleVaccinate = this.handleVaccinate.bind(this);
   }
 
   componentDidMount(){
@@ -29,6 +31,9 @@ class Vaccinate extends Component {
     switch(event.target.name) {
       case 'id' :
         this.setState({id:event.target.value});
+        break;
+      case 'vaccineId' :
+        this.setState({vaccineId:event.target.value});
         break;
       default:
         break;
@@ -55,17 +60,18 @@ class Vaccinate extends Component {
     this.checkVerification(event.target.elements.id.value);
   }
 
-  handleVaccinate() {
+  handleVaccinate(event) {
+    event.preventDefault();
     const data = {
       fcn:"Vaccinated",
       peers:["peer0.manufacturer.example.com","peer0.distribution.example.com","peer0.med.example.com","peer0.beneficiary.example.com","peer0.iot.example.com"],
       chaincodeName:"vacsup_cc",
       channelName:"mychannel",
-      args:this.state.id
+      args:[this.state.id,event.target.elements.vaccineId.value]
     };
-      axios.post('http://localhost:4000/channels/mychannel/chaincodes/vacsup_cc',data,{headers: {'Authorization':`Bearer ${token}`,'Content-Type':'application/json'}})
-        .then(res => console.log(res))
-        .catch(err => console.log(err));
+    axios.post('http://localhost:4000/channels/mychannel/chaincodes/vacsup_cc',data,{headers: {'Authorization':`Bearer ${token}`,'Content-Type':'application/json'}})
+      .then(res => console.log(res))
+      .catch(err => console.log(err));
   }
 
   render() {
@@ -93,7 +99,10 @@ class Vaccinate extends Component {
           {
             this.state.vaccinated === false
             ?
-            <button className="submit-button" type="button" onClick={this.handleVaccinate()}>Vaccinate</button>
+            <form onSubmit={(event) => this.handleVaccinate(event)}>
+              <input type="text" name="vaccineId" onChange={this.handleChange}/>
+              <button className="submit-button" type="submit">Vaccinate</button>
+            </form>
             :
             <h3>Already vaccinated</h3>
           }

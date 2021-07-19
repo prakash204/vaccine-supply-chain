@@ -1,9 +1,9 @@
 import React , {Component} from 'react';
 import Header from './base/header';
-import './dashboard.css';
 import axios from 'axios';
 import States from './jsondata/states.json';
 import GetDevices from './getdevices';
+import './dashboard.css';
 
 
 const token = localStorage.getItem('token');
@@ -22,20 +22,24 @@ class Dashboard extends Component {
       orgname : '',
       showAddvaccine: false,
       myvaccines:[],
+      feedback: null,
+      requirement:null,
       showAdddevice: false,
       registered:null,
       state_t:'Andhra Pradesh',
       district:'',
       phc:'',
+      flag:null,
       qrvalue:null
     };
 
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleFeedback = this.handleFeedback.bind(this);
   };
 
   componentDidMount() {
-    this.setState({username:localStorage.getItem('username'), orgname : localStorage.getItem('orgName')});
+    this.setState({username:localStorage.getItem('username'), orgname : localStorage.getItem('orgName'),feedback:false,flag:true});
     const apiurl_2 = `http://localhost:4000/channels/mychannel/chaincodes/vacsup_cc?args=${localStorage.getItem('username')}&fcn=GetRequirementByUsername`;
     const apiurl = 'http://localhost:4000/channels/mychannel/chaincodes/vacsup_cc?fcn=GetMyVaccine';
 
@@ -50,7 +54,7 @@ class Dashboard extends Component {
             console.log(response);
             if (response.data.result === `${localStorage.getItem('username')} does not exist`) {
               this.setState({registered:false});
-            } else this.setState({registered:true});
+            } else this.setState({registered:true,response:response.data.result,requirement:response.data.result,vaccinated:response.data.result.vaccinated});
           })
           .catch(err => console.log(err));
         }
@@ -79,7 +83,7 @@ class Dashboard extends Component {
         <td>{item.Record.name}</td>
         <td>{item.Record.manufacturer}</td>
         <td>{item.Record.owner}</td>
-        <td><a href={`/update_temp_location/${item.Record.t_dev_id}/`}>{item.Record.t_dev_id}</a></td>
+        <td><a href={`/vaccine_temp_location/${item.Record.t_dev_id}/`}>{item.Record.t_dev_id}</a></td>
         <td>{item.Record.count}</td>
       </tr>
     ))
@@ -123,6 +127,47 @@ class Dashboard extends Component {
     return Phcs.map((item) => (
       <option value={item}>{item}</option>
     ));
+  }
+
+  async getFeedback() {
+    const args = this.state.username+'-feedback';
+    const res = await axios.get(`http://localhost:4000/channels/mychannel/chaincodes/vacsup_cc?args=${args}&fcn=GetFeedbackById`,{headers:{'Authorization':`Bearer ${token}`,'Content-Type':'application/json'}});
+
+    if (res.data.result === `${args} does not exist`) {
+      this.setState({feedback:false});
+    } else {
+      this.setState({feedback:true});
+    }
+    console.log(res);
+
+  }
+
+  progressbar() {
+    if (this.state.flag === true) {
+      this.getFeedback();
+      this.setState({flag:false});
+    }
+    let width;
+    if (!this.state.registered) {
+      width = 25;
+    } else {
+      if (this.state.response.vaccinated) {
+        if (this.state.feedback) {
+          width = 100;
+        } else width=75;
+      } else {
+        width = 50;
+      }
+    }
+    return (
+      <div >
+      <div className="progress-bar">
+        <div className="progress" style={{width : width + '%'}}>
+        </div>
+      </div>
+      <span style={{padding:120+'px'}}>Begin</span><span style={{padding:120+'px'}}>Registered</span><span style={{padding:120+'px'}}>Vaccinated</span><span style={{paddingLeft:160+'px' }}>Feedback</span>
+      </div>
+    )
   }
 
   registerForVaccine = () => {
@@ -174,7 +219,23 @@ class Dashboard extends Component {
     document.body.removeChild(downloadLink);
   }
 
+  handleFeedback(event) {
+    event.preventDefault();
+    const data = {
+      fcn:"CreateFeedback",
+      peers:["peer0.manufacturer.example.com","peer0.distribution.example.com","peer0.med.example.com","peer0.beneficiary.example.com","peer0.iot.example.com"],
+      chaincodeName:"vacsup_cc",
+      channelName:"mychannel",
+      args:[this.state.username+'-feedback',this.state.requirement.vaccineId,event.target.elements.message.value]
+    };
+    axios.post('http://localhost:4000/channels/mychannel/chaincodes/vacsup_cc',data,{headers:{'Authorization': `Bearer ${token}`,'Content-Type':'application/json'}})
+      .then(res => console.log(res))
+      .catch(err => console.log(err));
+
+  }
+
   chooseForMyVaccines = () => {
+    //this.getFeedback();
     const myorgs = ["Manufacturer","Distribution","Med"];
     if (myorgs.includes(this.state.orgname)) {
 
@@ -203,7 +264,22 @@ class Dashboard extends Component {
 
       if (this.state.registered) {
 
-        return <><h2>You are already registered!!!</h2></>
+        if (this.state.vaccinated) {
+
+          if (this.state.feedback) return <h2>You are Vaccinated with <a href={`/vaccineID/${this.state.requirement.vaccineId}/`}>{this.state.requirement.vaccineId}</a></h2>;
+          else {
+            return (
+              <>
+              <h2>You are Vaccinated with <a href={`/vaccineID/${this.state.requirement.vaccineId}/`}>{this.state.requirement.vaccineId}</a></h2>
+              <p>Please fill the form to give the feedback</p>
+              <form className="update" onSubmit={(event) => {this.handleFeedback(event)}}>
+              <input type="text" name="message"/>&emsp;
+              <button type="submit" className="submit-button">Submit</button>
+              </form>
+              </>
+            )
+          }
+        } else return <><h2>You are already registered!!!</h2></>
 //<QRCode id="qrcode" value={this.state.qrvalue} /><a href="#" onClick={this.downloadQR}>download</a>
       } else {
 
@@ -232,6 +308,7 @@ class Dashboard extends Component {
         this.setState({phc: event.target.value});
       }
     }
+
   };
 
   handleSubmit(event) {
@@ -243,7 +320,7 @@ class Dashboard extends Component {
       peers:["peer0.manufacturer.example.com","peer0.distribution.example.com","peer0.med.example.com","peer0.beneficiary.example.com","peer0.iot.example.com"],
       chaincodeName:"vacsup_cc",
       channelName:"mychannel",
-      args:[this.state.username, this.state.orgname,this.state.state_t, this.state.district,this.state.phc]
+      args:[this.state.username, this.state.orgname,event.target.elements.state_t.value, event.target.elements.district.value,event.target.elements.phc.value]
     };
 
     axios.post('http://localhost:4000/channels/mychannel/chaincodes/vacsup_cc/',data,{ headers: { 'Authorization':`Bearer ${token}`,'Content-Type':'application/json' } })
@@ -258,7 +335,10 @@ class Dashboard extends Component {
       <div className="dashboard">
         <Header />
         <div className="content">
-    {this.chooseForMyVaccines()}
+        {
+          this.state.orgname === 'Beneficiary' ? this.progressbar() : ""
+        }
+          {this.chooseForMyVaccines()}
         </div>
       </div>
     );

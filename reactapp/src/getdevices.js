@@ -27,7 +27,7 @@ class GetDevices extends Component {
     if (Devices == null) return null;
     return Devices.map((item) => (
       <tr>
-        <td><a href={`/update_temp_location/${item.Record.id}/`}>{item.Record.id}</a></td>
+        <td><a href={`/vaccine_temp_location/${item.Record.id}/`}>{item.Record.id}</a></td>
         <td>{item.Record.min_temp}</td>
         <td>{item.Record.present_temp}</td>
         <td>{item.Record.max_temp}</td>

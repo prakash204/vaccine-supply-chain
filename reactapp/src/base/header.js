@@ -54,6 +54,12 @@ class Header extends Component {
     }
   }
 
+  chooseForGetFeedbacks() {
+    if (this.state.orgname === 'Manufacturer') {
+      return <a href="/feedbacks">Feedbacks</a>
+    }
+  }
+
 
   logout = () => {
     localStorage.removeItem('token');
@@ -79,6 +85,7 @@ class Header extends Component {
           {this.chooseForAdd()}
           {this.chooseForRequirement()}
           {this.chooseForVerifyandVaccinate()}
+          {this.chooseForGetFeedbacks()}
           <a href="/" onClick={this.logout}>logout</a>
         </div>
 

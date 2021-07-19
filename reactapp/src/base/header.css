@@ -20,7 +20,7 @@
 }
 
 .components {
-  float: right;
+  float: right !important;
 }
 
 .header a {

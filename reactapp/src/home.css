@@ -1,10 +1,56 @@
 .home {
-  background-color: #282c34;
-  min-height: 100vh;
+  background-color: #282c34 !important;
+  min-height: 100vh !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.home_content {
+  margin-top: 150px;
+  margin-left: 30px !important;
+  margin-right: 30px !important;
+  padding : 10px !important;
+  text-align: left !important;
+  border-radius:5px !important;
+  background-color: white !important;
+  font-size: 20px !important;
+  color: black !important;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  flex-direction: row ;
+}
+
+.Total_Content {
+  display: flex;
+  flex-direction: column ;
+}
+
+.table {
+  overflow-y: auto !important;
+  height: 400px !important;
+  margin:10px !important;
+  width: 100% !important;
+}
+
+.table table {
+  border-collapse: collapse !important;
+  border-spacing: 0 !important;
+}
+
+.table td, th {
+  padding: 10px !important;
+  height:30px !important;
+}
+
+.table tr:nth-child(even) {
+  background-color:Lightgreen !important;
+}
+
+.table a{
+  color: black !important;
+  text-decoration: underline !important;
+}
+
+.table a:hover{
+  color: black !important;
+  text-decoration: underline !important;
 }

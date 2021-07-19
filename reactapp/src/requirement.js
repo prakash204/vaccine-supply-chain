@@ -132,6 +132,7 @@ class Requirement extends Component {
   }
 
   sendVaccine(to,count,phc,district,state,e) {
+    this.checkCategory();
     console.log(to+count);
     const apiurl_forvaccines = 'http://localhost:4000/channels/mychannel/chaincodes/vacsup_cc?fcn=GetMyVaccine';
     axios.get(apiurl_forvaccines,{ headers: { 'Authorization': `Bearer ${token}`}})
@@ -214,7 +215,7 @@ class Requirement extends Component {
     e.preventDefault();
     console.log(this.state.to +" "+this.state.count+" "+e.target.elements.vaccineId.value);
     var args = [];
-    var args_2 = 'District';
+    let args_2;
     let response =[];
     let data_2;
     const apiurl = "http://localhost:4000/channels/mychannel/chaincodes/vacsup_cc";
@@ -233,12 +234,14 @@ class Requirement extends Component {
       default:
         break;
     }*/
-    if (this.state.category == 'state') {
+    if (this.state.category === 'state') {
       args_2 = 'Phc';
-    } else if (this.state.category == 'district') {
+    } else if (this.state.category === 'district') {
       args_2 = 'Individual';
-      console.log(args_2);
+    } else if (this.state.orgname === 'Manufacturer') {
+      args_2 = 'District';
     }
+    console.log(args_2);
 
     const data = {
       fcn:"UpdateVaccineOwner",

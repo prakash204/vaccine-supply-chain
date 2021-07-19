@@ -57,6 +57,10 @@ const invokeTransaction = async ( channelName, chaincodeName, fcn, args, usernam
                 result = await contract.submitTransaction('DeviceContract:'+fcn,JSON.stringify(args));
                 result = {txid: result.toString()}
                 break;
+            case "CreateFeedback":
+                result = await contract.submitTransaction('FeedbackContract:'+fcn,JSON.stringify(args));
+                result = {txid: result.toString()}
+                break;
             case "CreateRequirement":
                 result = await contract.submitTransaction('RequirementContract:'+fcn,JSON.stringify(args));
                 result = {txid: result.toString()}
@@ -77,7 +81,13 @@ const invokeTransaction = async ( channelName, chaincodeName, fcn, args, usernam
                 break;
             case "Vaccinated":
                 console.log("=============");
-                result = await contract.submitTransaction('RequirementContract:'+fcn, args );
+                result = await contract.submitTransaction('RequirementContract:'+fcn, JSON.stringify(args));
+                const result_2 = await contract.submitTransaction('VaccineContract:UpdateVaccineCount', args[1])
+                result = {txid: result.toString()}
+                break;
+            case "UpdateVaccineCount":
+                console.log("=============");
+                result = await contract.submitTransaction('VaccineContract:'+fcn, args)
                 result = {txid: result.toString()}
                 break;
             case "UpdateLevel":

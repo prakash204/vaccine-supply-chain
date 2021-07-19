@@ -225,6 +225,12 @@ app.get('/channels/:channelName/chaincodes/:chaincodeName', async function (req,
           case 'GetAllRequirements':
             args = req.username;
             break;
+          case 'GetAllVaccines':
+            args = req.username;
+            break;
+          case 'GetAllFeedbacks':
+            args = req.username;
+            break;
           default:
             args = req.query.args;
             break;
