@@ -13,6 +13,8 @@ Organizations:
             Admins:
                 Type: Signature
                 Rule: "OR('OrdererMSP.admin')"
+        OrdererEndpoints:
+            - orderer.example.com:7050
 
     - &Manufacturer
         Name: ManufacturerMSP
@@ -257,23 +259,43 @@ Application: &ApplicationDefaults
 Orderer: &OrdererDefaults
 
     OrdererType: etcdraft
-
     EtcdRaft:
         Consenters:
-        - Host: orderer.example.com
-          Port: 7050
-          ClientTLSCert: crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/server.crt
-          ServerTLSCert: crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/server.crt
+          - Host: orderer.example.com
+            Port: 7050
+            ClientTLSCert: crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/server.crt
+            ServerTLSCert: crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/server.crt
+          - Host: orderer2.example.com
+            Port: 8050
+            ClientTLSCert: crypto-config/ordererOrganizations/example.com/orderers/orderer2.example.com/tls/server.crt
+            ServerTLSCert: crypto-config/ordererOrganizations/example.com/orderers/orderer2.example.com/tls/server.crt
+          - Host: orderer3.example.com
+            Port: 9050
+            ClientTLSCert: crypto-config/ordererOrganizations/example.com/orderers/orderer3.example.com/tls/server.crt
+            ServerTLSCert: crypto-config/ordererOrganizations/example.com/orderers/orderer3.example.com/tls/server.crt
+          - Host: orderer4.example.com
+            Port: 10050
+            ClientTLSCert: crypto-config/ordererOrganizations/example.com/orderers/orderer4.example.com/tls/server.crt
+            ServerTLSCert: crypto-config/ordererOrganizations/example.com/orderers/orderer4.example.com/tls/server.crt
+          - Host: orderer5.example.com
+            Port: 11050
+            ClientTLSCert: crypto-config/ordererOrganizations/example.com/orderers/orderer5.example.com/tls/server.crt
+            ServerTLSCert: crypto-config/ordererOrganizations/example.com/orderers/orderer5.example.com/tls/server.crt
 
     Addresses:
         - orderer.example.com:7050
+        - orderer2.example.com:8050
+        - orderer3.example.com:9050
+        - orderer4.example.com:10050
+        - orderer5.example.com:11050
+
 
     BatchTimeout: 2s
 
     BatchSize:
-        MaxMessageCount: 10
-        AbsoluteMaxBytes: 99 MB
-        PreferredMaxBytes: 512 KB
+        MaxMessageCount: 500
+        AbsoluteMaxBytes: 10 MB
+        PreferredMaxBytes: 2 MB
 
     Organizations:
 
@@ -327,27 +349,15 @@ Profiles:
             <<: *ChannelCapabilities
         Orderer:
             <<: *OrdererDefaults
-            OrdererType: etcdraft
-            EtcdRaft:
-                Consenters:
-                - Host: orderer.example.com
-                  Port: 7050
-                  ClientTLSCert: crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/server.crt
-                  ServerTLSCert: crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/server.crt
-
-            Addresses:
-                - orderer.example.com:7050
-
-
             Organizations:
-            - *OrdererOrg
+                - *OrdererOrg
             Capabilities:
                 <<: *OrdererCapabilities
         Consortiums:
             SampleConsortium:
                 Organizations:
-                - *Manufacturer
-                - *Distribution
-                - *Med
-                - *Beneficiary
-                - *Iot
+                  - *Manufacturer
+                  - *Distribution
+                  - *Med
+                  - *Beneficiary
+                  - *Iot

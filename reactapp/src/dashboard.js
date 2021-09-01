@@ -4,6 +4,8 @@ import axios from 'axios';
 import States from './jsondata/states.json';
 import GetDevices from './getdevices';
 import './dashboard.css';
+import GetCertificate from './getcertificate';
+import VerifyQrCode from './verifyqrcode';
 
 
 const token = localStorage.getItem('token');
@@ -23,6 +25,7 @@ class Dashboard extends Component {
       showAddvaccine: false,
       myvaccines:[],
       feedback: null,
+      feedbackData:[],
       requirement:null,
       showAdddevice: false,
       registered:null,
@@ -39,6 +42,7 @@ class Dashboard extends Component {
   };
 
   componentDidMount() {
+    console.log(localStorage.getItem('username'));
     this.setState({username:localStorage.getItem('username'), orgname : localStorage.getItem('orgName'),feedback:false,flag:true});
     const apiurl_2 = `http://localhost:4000/channels/mychannel/chaincodes/vacsup_cc?args=${localStorage.getItem('username')}&fcn=GetRequirementByUsername`;
     const apiurl = 'http://localhost:4000/channels/mychannel/chaincodes/vacsup_cc?fcn=GetMyVaccine';
@@ -136,7 +140,7 @@ class Dashboard extends Component {
     if (res.data.result === `${args} does not exist`) {
       this.setState({feedback:false});
     } else {
-      this.setState({feedback:true});
+      this.setState({feedback:true,feedbackData:res.data.result});
     }
     console.log(res);
 
@@ -197,10 +201,7 @@ class Dashboard extends Component {
             </select>
           </label>
 
-          <label>
-            Password:
-            <input type="password" name="passcode"/>
-          </label>
+
 
           <button className="submit-button" type="submit">Register</button>
         </form>
@@ -210,7 +211,7 @@ class Dashboard extends Component {
 
   downloadQR = () => {
     const canvas = document.getElementById("qrcode");
-    const pngUrl = canvas.toDataURL("image/png").replace("mage/png","image/octe-stream");
+    const pngUrl = canvas.toDataURL("image/png").replace("image/png","image/octe-stream");
     let downloadLink = document.createElement("a");
     downloadLink.href = pngUrl;
     downloadLink.download = "qrcode.png";
@@ -266,7 +267,13 @@ class Dashboard extends Component {
 
         if (this.state.vaccinated) {
 
-          if (this.state.feedback) return <h2>You are Vaccinated with <a href={`/vaccineID/${this.state.requirement.vaccineId}/`}>{this.state.requirement.vaccineId}</a></h2>;
+          if (this.state.feedback) return (
+            <>
+            <h2>You are Vaccinated with <a href={`/vaccineID/${this.state.requirement.vaccineId}/`}>{this.state.requirement.vaccineId}</a></h2>
+            <h3>Feedback : </h3><span>{this.state.feedbackData.message}</span>
+            <GetCertificate requirement_data={this.state.requirement}/>
+            </>
+          )
           else {
             return (
               <>
@@ -289,7 +296,7 @@ class Dashboard extends Component {
 
     } else if (this.state.orgname === 'Iot') {
 
-      return <GetDevices />
+      return <VerifyQrCode />
 
     }
   }
@@ -314,7 +321,7 @@ class Dashboard extends Component {
   handleSubmit(event) {
     event.preventDefault();
 
-    const passcode = event.target.elements.passcode.value;
+    //const passcode = event.target.elements.passcode.value;
     const data = {
       fcn:"CreateRequirement",
       peers:["peer0.manufacturer.example.com","peer0.distribution.example.com","peer0.med.example.com","peer0.beneficiary.example.com","peer0.iot.example.com"],
@@ -344,5 +351,9 @@ class Dashboard extends Component {
     );
   }
 }
+/*<label>
+  Password:
+  <input type="password" name="passcode"/>
+</label>*/
 
 export default Dashboard;

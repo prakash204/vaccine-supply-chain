@@ -8,7 +8,7 @@ class Signup extends Component {
     super(props);
     this.state = {
       username : '',
-      password : '',
+      //password : '',
       register : false,
       response : {},
     };
@@ -23,10 +23,10 @@ class Signup extends Component {
         this.setState({username:event.target.value});
         break;
       }
-      case 'password' : {
+      /*case 'password' : {
         this.setState({password:event.target.value});
         break;
-      }
+      }*/
     }
   };
 
@@ -34,12 +34,12 @@ class Signup extends Component {
     event.preventDefault();
     const username = event.target.elements.username.value;
     const orgname = event.target.elements.orgname.value;
-    const passcode = event.target.elements.password.value;
+    //const passcode = event.target.elements.password.value;
 
     const data = {
       username : username,
       orgName :orgname,
-      passcode : passcode
+      //passcode : passcode
     };
 
     axios.post('http://localhost:4000/register', data)
@@ -48,7 +48,7 @@ class Signup extends Component {
 
 
     if (this.state.response.success === true) {
-      this.setState({register : true,username:'',password:''});
+      this.setState({register : true,username:''});
     }
     console.log("response = "+this.state.response);
   };
@@ -84,10 +84,7 @@ class Signup extends Component {
               <option value="Iot">IOT</option>
             </select>
           </label><br/>
-          <label>
-            Password:
-            <input type="password" name="password" value={this.state.password} onChange={this.handleChange}/>
-          </label><br/>
+
           <button className="submit-button" type="submit"> Signup </button>
         </form>
     </div>
@@ -95,5 +92,9 @@ class Signup extends Component {
   );
 }
 }
+/*<label>
+  Password:
+  <input type="password" name="password" value={this.state.password} onChange={this.handleChange}/>
+</label><br/>*/
 
 export default Signup;

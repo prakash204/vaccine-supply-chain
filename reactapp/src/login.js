@@ -33,12 +33,12 @@ class Login extends Component {
     event.preventDefault();
     const username = event.target.elements.username.value;
     const orgname = event.target.elements.orgname.value;
-    const passcode = event.target.elements.password.value;
+    //const passcode = event.target.elements.password.value;
 
     axios.post('http://localhost:4000/users/login', {
     username : username,
     orgName :orgname,
-    passcode : passcode
+  //  passcode : passcode
     })
     .then((res) => this.setState({token : res.data.message.token,success : res.data.success}))
     .catch(err => console.log(err));
@@ -96,10 +96,7 @@ class Login extends Component {
               </select>
             </label><br/>
 
-            <label>
-              Password:
-              <input type="password" name="password" />
-            </label><br/>
+
 
             <button className="submit-button" type="submit"> Login </button>
           </form>
@@ -108,5 +105,10 @@ class Login extends Component {
   );
 }
 }
+
+/*            <label>
+              Password:
+              <input type="password" name="password" />
+            </label><br/>*/
 
 export default Login;

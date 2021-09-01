@@ -41,7 +41,6 @@ const getWalletPath = async (org) => {
     return walletPath
 }
 
-
 const getAffiliation = async (org) => {
     // Default in ca config file we have only two affiliations, if you want ti use org3 ca, you have to update config file with third affiliation
     //  Here already two Affiliation are there, using i am using "org2.department1" even for org3

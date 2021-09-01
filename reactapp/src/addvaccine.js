@@ -59,7 +59,7 @@ class AddVaccine extends Component {
           <form className="login" onSubmit={(event) => this.handleSubmit(event)}>
 
             <label>
-              VaccineID:
+              Vaccine Box ID:
               <input type="text" name="vacid" />
             </label><br/>
             <label>
@@ -67,7 +67,7 @@ class AddVaccine extends Component {
               <input type="text" name="vacname" />
             </label><br/>
             <label>
-              DeviceID:
+              IoT DeviceID:
               <input type="text" name="devid" />
             </label><br/>
             <label>

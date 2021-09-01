@@ -3,7 +3,7 @@ const log4js = require('log4js');
 const logger = log4js.getLogger('BasicNetwork');
 const bodyParser = require('body-parser');
 const util = require('util');
-const express = require('express')
+const express = require('express');
 const app = express();
 const expressJWT = require('express-jwt');
 const jwt = require('jsonwebtoken');
@@ -11,9 +11,6 @@ const bearerToken = require('express-bearer-token');
 const cors = require('cors');
 const constants = require('./config/constants.json')
 const sha256 = require('sha256');
-
-const host = process.env.HOST || constants.host;
-const port = process.env.PORT || constants.port;
 
 
 const helper = require('./app/helper')
@@ -79,7 +76,7 @@ function getErrorMessage(field) {
 app.post('/register', async function (req, res) {
     var username = req.body.username;
     var orgName = req.body.orgName;
-    var passcode = req.body.passcode;
+    //var passcode = req.body.passcode;
 
     if (!username) {
         res.json(getErrorMessage('\'username\''));
@@ -89,10 +86,10 @@ app.post('/register', async function (req, res) {
         res.json(getErrorMessage('\'orgName\''));
         return;
     }
-    if (!passcode) {
+    /*if (!passcode) {
         res.json(getErrorMessage('\'passcode\''));
         return;
-    }
+    }*/
 
     const hash = sha256(username + orgName);
 
@@ -113,11 +110,11 @@ app.post('/users/login', async function (req, res) {
     console.log(req.orgname);
     var username = req.body.username;
     var orgName = req.body.orgName;
-    var passcode = req.body.passcode;
+    //var passcode = req.body.passcode;
     logger.debug('End point : /users');
     logger.debug('User name : ' + username);
     logger.debug('Org name  : ' + orgName);
-    logger.debug('passcode  : ' + passcode);
+    //logger.debug('passcode  : ' + passcode);
     if (!username) {
         res.json(getErrorMessage('\'username\''));
         return;
@@ -126,9 +123,9 @@ app.post('/users/login', async function (req, res) {
         res.json(getErrorMessage('\'orgName\''));
         return;
     }
-    if (!passcode) {
+    /*if (!passcode) {
       res.json(getErrorMessage('\'passcode\''));
-    }
+    }*/
 
     var token = jwt.sign({
         exp: Math.floor(Date.now() / 1000) + parseInt(constants.jwt_expiretime),

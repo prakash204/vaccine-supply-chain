@@ -2,6 +2,7 @@ import {Component} from 'react';
 import './home.css';
 import Header from './base/header';
 import axios from 'axios';
+import GetCertificate from './getcertificate';
 
 import {states} from './jsondata/states.json';
 
@@ -117,7 +118,7 @@ class Home extends Component {
     for (let i=0;i<this.state.vaccines.length;i++) {
       for (const state of S) {
         if (this.state.vaccines[i].Record.owner === state.name) {
-          group[state.id -1]++;
+          group[state.id -1] = group[state.id -1] + this.state.vaccines[i].Record.count;
         }
       }
     }
@@ -146,7 +147,7 @@ class Home extends Component {
           }
           for (const district of D) {
             if (this.state.vaccines[i].Record.owner === district.name) {
-              Group[district.id -1]++;
+              Group[district.id -1]=Group[district.id - 1]+this.state.vaccine[i].Record.owner;
             }
           }
         }
@@ -185,7 +186,7 @@ class Home extends Component {
               }
               for (let j=0;j<Group.length;j++) {
                 if (this.state.vaccines[i].Record.owner === Group[j].name) {
-                  Group[j].count++;
+                  Group[j].count=Group[j].count + this.state.vaccines[i].Record.count;
                 }
               }
             }
@@ -363,7 +364,10 @@ class Home extends Component {
       </div>
       </>
     );
-    else return <h1 style={{marginTop:100+'px',color:"white"}}>Welcome&emsp;<a href="/login" style={{color:"white"}}>Login</a>&nbsp;/ &nbsp;<a href="/signup" style={{color:"white"}}>Signup</a></h1>
+    else return <>
+      <h1 style={{marginTop:100+'px',color:"white"}}>Welcome&emsp;<a href="/login" style={{color:"white"}}>Login</a>&nbsp;/ &nbsp;<a href="/signup" style={{color:"white"}}>Signup</a></h1>
+      <GetCertificate/>
+      </>
   }
 
   render() {

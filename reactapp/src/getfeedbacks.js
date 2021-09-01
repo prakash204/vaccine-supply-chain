@@ -29,7 +29,7 @@ class GetFeedbacks extends Component {
 
     return Feedbacks.map((item) => (
       <tr>
-        <td>{item.Record.username}</td>
+        <td>{item.Record.username.substring(0,item.Record.username.length - 10)}</td>
         <td>{item.Record.vaccineId}</td>
         <td>{item.Record.message}</td>
       </tr>
